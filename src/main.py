@@ -14,7 +14,6 @@ def handle_updates(api_response):
 
 def handle_update(update):
     message = update.get("message", {}).get("text")
-    print(message)
     if message == "/start":
         handle_start(update)
     elif message == "/cancel":
