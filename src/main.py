@@ -54,13 +54,14 @@ def handle_generic_message(update):
             age = datetime.now().year - age
 
         if age >= get_min_years():
-            message = "¡Ey! Parece que el sistema ya te permite vacunarte. ¡Pide cita ya en " \
+            message = "¡Ey! Parece que el sistema ya te permite pedir cita. ¡Hazlo ya en " \
                       "https://autocitavacuna.sanidadmadrid.org/ohcitacovid/!"
         else:
             db.save_notification(user_id, user_name, age)
             message = f"¡Genial {user_name}! Volverás a saber de mi cuando el sistema de autocitación " \
-                      f"de la Comunidad de Madrid permita vacunarse a gente de {age} años o más jovenes. Si quieres " \
-                      f"cancelar la subscipción, simplemente escribe /cancel"
+                      f"de la Comunidad de Madrid permita pedir cita a gente de {age} años o más jovenes. Si quieres " \
+                      f"cancelar la subscipción, simplemente escribe /cancel.\n\nPD: Si tuvieras una notificación " \
+                      f"establecida anteriormente, ha sido sustituida por esta última."
     except ValueError:
         message = "¡Vaya! Parece que no te he entendido. Para que te notifique cuando puedas pedir cita en el " \
                   "sistema de autocita de la Comunidad de Madrid, simplemente dime tu edad (ejemplo: 31) o tu año de " \
