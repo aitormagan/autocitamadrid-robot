@@ -13,7 +13,7 @@ def handle_updates(api_response):
 
 
 def handle_update(update):
-    message = update.get("message", {}).get("text")
+    message = update.get("message", {}).get("text", "")
     if message == "/start":
         handle_start(update)
     elif message == "/cancel":
@@ -41,7 +41,7 @@ def handle_cancel(update):
 
 def handle_generic_message(update):
     user_info = update.get("message", {}).get("from", {})
-    received_message = update.get("message", {}).get("text")
+    received_message = update.get("message", {}).get("text", "")
     user_id = user_info.get("id")
     user_name = user_info.get('first_name')
 
