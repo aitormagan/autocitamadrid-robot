@@ -56,8 +56,8 @@ def handle_generic_message(update):
                   f"de la Comunidad de Madrid permita vacunarse a gente de {age} años o más jovenes. Si quieres " \
                   f"cancelar la subscipción, simplemente escribe /cancel"
     except ValueError:
-        message = "¡Vaya! Parece que no te he entendido. Para que te notifique cuando puedas pedir cita en el sistema" \
-                  "de autocita de la Comunidad de Madrid, simplemente dime tu edad (ejemplo: 31) o tu año de " \
+        message = "¡Vaya! Parece que no te he entendido. Para que te notifique cuando puedas pedir cita en el " \
+                  "sistema de autocita de la Comunidad de Madrid, simplemente dime tu edad (ejemplo: 31) o tu año de " \
                   "nacimiento (ejemplo: 1991)"
 
     telegram_helpers.send_text(user_id, message)
