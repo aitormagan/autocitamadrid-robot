@@ -43,11 +43,12 @@ def handle_generic_message(update):
     user_info = update.get("message", {}).get("from", {})
     received_message = update.get("message", {}).get("text")
     user_id = user_info.get("id")
+    user_name = user_info.get('first_name')
 
     try:
         age = int(received_message)
-        db.save_notification(user_id, age)
-        message = f"¡Genial {user_info.get('first_name')}! Volverás a saber de mi cuando el sistema de autocitación " \
+        db.save_notification(user_id, user_name, age)
+        message = f"¡Genial {user_name}! Volverás a saber de mi cuando el sistema de autocitación " \
                   f"de la Comunidad de Madrid permita vacunarse a gente de {age} años o más jovenes. Si quieres " \
                   f"cancelar la subscipción, simplemente escribe /cancel"
     except ValueError:
