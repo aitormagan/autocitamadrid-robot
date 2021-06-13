@@ -16,10 +16,14 @@ def handle_updates(api_response):
 
 def handle_update(update):
     message = update.get("message", {}).get("text", "")
-    if message == "/start":
+    if message in ("/start", "/help"):
         handle_start(update)
     elif message == "/cancel":
         handle_cancel(update)
+    elif message == "/status":
+        handle_status(update)
+    elif message == "/current-age":
+        handle_current_age(update)
     else:
         handle_generic_message(update)
 
@@ -29,7 +33,9 @@ def handle_start(update):
     name = user_info.get("first_name", "")
     message = f"¡Hola {name}! Bienvenido al sistema de notificación de vacunación. Si quieres que te avise cuando " \
               f"puedas pedir cita para vacunarte en la Comunidad de Madrid, simplemente indicame la edad que tienes " \
-              f"o tu año de nacimiento!"
+              f"o tu año de nacimiento!\n\nOtros comandos útiles:\n- /help: Muestra esta ayuda\n- /status: Muestra " \
+              f"si ya estás suscrito\n- /cancel: Cancela la notificación registrada\n- /current-age: Muestra la edad " \
+              f"actual con la que el sistema permite pedir cita"
     telegram_helpers.send_text(user_info.get("id"), message)
 
 
@@ -39,6 +45,28 @@ def handle_cancel(update):
     db.delete_notification(user_id)
     message = f"¡Vale {user_info.get('first_name')}! He borrado tus datos y ya no te notificaré. Si quieres volver a " \
               f"activar la suscripción, simplemente di /start"
+    telegram_helpers.send_text(user_id, message)
+
+
+def handle_status(update):
+    user_info = update.get("message", {}).get("from", {})
+    user_id = user_info.get("id")
+    age = db.get_notification_age(user_id)
+    if age:
+        message = "¡Genial! Ya tienes activas las notificaciones para cuando el sistema de autocita permita pedir " \
+                  f"cita a personas de {age} o más años. Si quieres cancelarla, simplemente escribe /cancel."
+    else:
+        message = "Actualmente no tienes ninguna notificación registrada. Si quieres que te notifique cuando puedas " \
+                  "pedir cita para vacunarte simplemente dime tu año de nacimiento o tu edad."
+    telegram_helpers.send_text(user_id, message)
+
+
+def handle_current_age(update):
+    user_info = update.get("message", {}).get("from", {})
+    user_id = user_info.get("id")
+    min_years = get_min_years()
+    message = f"El sistema de autocita permite pedir cita a personas con {min_years} años o más. Si cumples con la " \
+              f"edad, puedes ir a https://autocitavacuna.sanidadmadrid.org/ohcitacovid para pedir tu cita"
     telegram_helpers.send_text(user_id, message)
 
 

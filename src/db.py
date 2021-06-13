@@ -18,6 +18,11 @@ def delete_notification(user_id):
     CLIENT.delete_item(TableName=TABLE_NAME, Key={__USER_ID: {"S": str(user_id)}})
 
 
+def get_notification_age(user_id):
+    item = CLIENT.get_item(TableName=TABLE_NAME, Key={__USER_ID: {"S": str(user_id)}}).get("Item", None)
+    return int(item.get("age").get("N")) if item else None
+
+
 def get_non_notified_people():
     paginator = CLIENT.get_paginator('scan')
     dynamo_items = paginator.paginate(TableName=TABLE_NAME).build_full_result().get("Items", [])
