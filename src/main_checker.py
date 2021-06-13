@@ -15,14 +15,17 @@ def mark_as_notified(user_info):
     save_notification(user_info["user_id"], user_info["name"], user_info["age"], True)
 
 
-def main():
-
+def get_min_years():
     data = requests.get("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/assets/config/app-config.json",
                         verify=False).json()
 
     max_birthday = datetime.strptime(data["dFin_Birthday"], "%d/%m/%Y")
     curr_date = datetime.now()
-    min_years = curr_date.year - max_birthday.year
+    return curr_date.year - max_birthday.year
+
+
+def main():
+    min_years = get_min_years()
     non_notified = get_non_notified_people()
 
     for person in non_notified:
