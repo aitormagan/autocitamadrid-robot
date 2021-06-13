@@ -16,7 +16,7 @@ def handle_updates(api_response):
 
 def handle_update(update):
     message = update.get("message", {}).get("text", "")
-    if message in ("/start", "/help"):
+    if message == "/start":
         handle_start(update)
     elif message == "/cancel":
         handle_cancel(update)
@@ -34,8 +34,7 @@ def handle_start(update):
     message = f"¡Hola {name}! Bienvenido al sistema de notificación de vacunación. Si quieres que te avise cuando " \
               f"puedas pedir cita para vacunarte en la Comunidad de Madrid, simplemente indicame la edad que tienes " \
               f"o tu año de nacimiento!\n\nOtros comandos útiles:\n- /help: Muestra esta ayuda\n- /status: Muestra " \
-              f"si ya estás suscrito\n- /cancel: Cancela la notificación registrada\n- /current_age: Muestra la edad " \
-              f"actual con la que el sistema permite pedir cita"
+              f"si ya estás suscrito\n- /cancel: Cancela la notificación registrada"
     telegram_helpers.send_text(user_info.get("id"), message)
 
 
@@ -102,6 +101,7 @@ def main():
     offset = 0
     while True:
         updates = telegram_helpers.get_updates(offset)
+        print(updates)
         offset = handle_updates(updates)
 
 
