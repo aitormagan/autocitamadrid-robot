@@ -22,7 +22,7 @@ def handle_update(update):
         handle_cancel(update)
     elif message == "/status":
         handle_status(update)
-    elif message == "/current-age":
+    elif message == "/current_age":
         handle_current_age(update)
     else:
         handle_generic_message(update)
@@ -34,7 +34,7 @@ def handle_start(update):
     message = f"¡Hola {name}! Bienvenido al sistema de notificación de vacunación. Si quieres que te avise cuando " \
               f"puedas pedir cita para vacunarte en la Comunidad de Madrid, simplemente indicame la edad que tienes " \
               f"o tu año de nacimiento!\n\nOtros comandos útiles:\n- /help: Muestra esta ayuda\n- /status: Muestra " \
-              f"si ya estás suscrito\n- /cancel: Cancela la notificación registrada\n- /current-age: Muestra la edad " \
+              f"si ya estás suscrito\n- /cancel: Cancela la notificación registrada\n- /current_age: Muestra la edad " \
               f"actual con la que el sistema permite pedir cita"
     telegram_helpers.send_text(user_info.get("id"), message)
 
