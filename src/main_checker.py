@@ -6,7 +6,7 @@ from db import save_notification, get_non_notified_people
 
 def notify(user_info):
     message = f"¡Buenas noticias {user_info['name']}! El sistema de vacunación de la Comunidad de Madrid ya permite " \
-              f"pedir cita a gente con {user_info['age']} o menos. !Corre y pide tu cita en " \
+              f"pedir cita a gente con {user_info['age']} años o más. !Corre y pide tu cita en " \
               f"https://autocitavacuna.sanidadmadrid.org/ohcitacovid/!"
     send_text(user_info["user_id"], message)
 
