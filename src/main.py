@@ -52,9 +52,9 @@ def handle_status(update):
     user_info = update.get("message", {}).get("from", {})
     user_id = user_info.get("id")
     user_notification = db.get_user_notification(user_id)
-    if not user_notification:
+    if user_notification:
         age = user_notification["age"]
-        if user_notification["notified"]:
+        if not user_notification["notified"]:
             message = "¡Genial! Ya tienes activas las notificaciones 🔔 para cuando el sistema de autocita permita " \
                       f"pedir cita a personas de {age} o más años. Si quieres cancelarla, simplemente escribe /cancel."
         else:
