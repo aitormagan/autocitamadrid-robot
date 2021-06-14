@@ -18,9 +18,9 @@ def delete_notification(user_id):
     CLIENT.delete_item(TableName=TABLE_NAME, Key={__USER_ID: {"S": str(user_id)}})
 
 
-def get_notification_age(user_id):
+def get_user_notification(user_id):
     item = CLIENT.get_item(TableName=TABLE_NAME, Key={__USER_ID: {"S": str(user_id)}}).get("Item", None)
-    return int(item.get("age").get("N")) if item else None
+    return __parse_item(item) if item else None
 
 
 def get_non_notified_people():
@@ -30,10 +30,15 @@ def get_non_notified_people():
 
     for item in dynamo_items:
         if not item.get(__NOTIFIED).get("BOOL"):
-            non_notified.append({
-                "name": item[__NAME]["S"],
-                "age": int(item[__AGE]["N"]),
-                "user_id": item[__USER_ID]["S"]
-            })
+            non_notified.append(__parse_item(item))
 
     return non_notified
+
+
+def __parse_item(item):
+    return {
+        "name": item[__NAME]["S"],
+        "age": int(item[__AGE]["N"]),
+        "user_id": item[__USER_ID]["S"],
+        "notified": item[__NOTIFIED]["BOOL"]
+    }
