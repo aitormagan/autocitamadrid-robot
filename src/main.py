@@ -95,7 +95,7 @@ def handle_generic_message(update):
             db.save_notification(user_id, user_name, age)
             message = f"¡Genial {user_name} 😊! Volverás a saber de mi cuando el sistema de autocitación " \
                       f"de la Comunidad de Madrid permita pedir cita a gente con {age} años. Si quieres " \
-                      f"❌ cancelar la suscripción, simplemente escribe /cancel.\n\nPD: Si tuvieras una notificación " \
+                      f"cancelar la suscripción, simplemente escribe /cancel.\n\nPD: Si tuvieras una notificación " \
                       f"establecida anteriormente, ha sido sustituida por esta última."
     except ValueError:
         message = "¡Vaya 🥺! Parece que no te he entendido. Para que te 🔔 notifique cuando puedas pedir cita en el " \
