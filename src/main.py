@@ -52,7 +52,7 @@ def handle_status(update):
     user_info = update.get("message", {}).get("from", {})
     user_id = user_info.get("id")
     user_notification = db.get_user_notification(user_id)
-    if user_notification:
+    if not user_notification:
         age = user_notification["age"]
         if user_notification["notified"]:
             message = "¡Genial! Ya tienes activas las notificaciones 🔔 para cuando el sistema de autocita permita " \
