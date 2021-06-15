@@ -110,8 +110,8 @@ def handle_generic_message(update):
             message = "‼️ ¡Ey! Parece que el sistema ya te permite pedir cita. ¡Hazlo ya en 🔗 " \
                       "https://autocitavacuna.sanidadmadrid.org/ohcitacovid/!"
         else:
-            db.save_notification(user_id, user_name, age)
             user_notification = db.get_user_notification(user_id)
+            db.save_notification(user_id, user_name, age)
             message = f"¡Genial {user_name} 😊! Volverás a saber de mi cuando el sistema de autocitación " \
                       f"de la Comunidad de Madrid permita pedir cita a gente con {age} años. Si quieres " \
                       f"cancelar la suscripción, simplemente escribe /cancel."
