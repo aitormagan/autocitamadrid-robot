@@ -127,7 +127,6 @@ def main():
     offset = 0
     while True:
         updates = telegram_helpers.get_updates(offset)
-        print(updates)
         offset = handle_updates(updates)
 
 
