@@ -24,6 +24,8 @@ def handle_update(update):
         handle_status(update)
     elif message == "/currentage":
         handle_current_age(update)
+    elif message == "/subscribe":
+        handle_subscribe(update)
     else:
         handle_generic_message(update)
 
@@ -33,7 +35,8 @@ def handle_start(update):
     name = user_info.get("first_name", "")
     message = f"¡Hola {name}! Bienvenido al sistema de notificación de vacunación. Si quieres que te avise 🔔 cuando " \
               f"puedas pedir cita para vacunarte 💉 en la Comunidad de Madrid, simplemente indicame la edad que " \
-              f"tienes o tu año de nacimiento!\n\nOtros comandos útiles:\n- /help: 🙋 Muestra esta ayuda\n- /status: " \
+              f"tienes o tu año de nacimiento!\n\nOtros comandos útiles:\n-/subscribe: 🔔 Crea una suscripción para " \
+              f"cuando puedas pedir cita para vacunarte\n- /help: 🙋 Muestra esta ayuda\n- /status: " \
               f"ℹ️ Muestra si ya estás suscrito\n- /cancel: 🔕 Cancela la notificación registrada\n - /currentage: " \
               f"📆 Muestra la edad mínima con la que puedes pedir cita"
     telegram_helpers.send_text(user_info.get("id"), message)
@@ -73,6 +76,21 @@ def handle_current_age(update):
     min_years = get_min_years()
     message = f"El sistema de autocita permite pedir cita a personas con {min_years} años o más️. Si cumples con " \
               f"la edad, puedes ir a 🔗 https://autocitavacuna.sanidadmadrid.org/ohcitacovid para pedir tu cita"
+
+    user_notification = db.get_user_notification(user_id)
+    if not user_notification:
+        message = "\n\n💡 Puedo notificarte 🔔 cuando el sistema de autocitación permita vacunar a gente con tu edad. " \
+                  "Simplemente dime tu edad o tu año de nacimiento."
+
+    telegram_helpers.send_text(user_id, message)
+
+
+def handle_subscribe(update):
+    user_info = update.get("message", {}).get("from", {})
+    user_id = user_info.get("id")
+    user_name = user_info.get('first_name')
+    message = f"¡👌 {user_name}! ¿Me dices tu edad o tu fecha de nacimiento?"
+
     telegram_helpers.send_text(user_id, message)
 
 
