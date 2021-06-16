@@ -116,8 +116,8 @@ def handle_generic_message(update):
                       f"de la Comunidad de Madrid permita pedir cita a gente con {age} años. Si quieres " \
                       f"cancelar la suscripción, simplemente escribe /cancel."
 
-            if user_notification:
-                message += "\n\n⚠️ Ya tenías una suscripción activa. La he sustituido por esta última. "
+            if user_notification and user_notification["age"] != age:
+                message += f"\n\n⚠️ Ya tenías una suscripción activa. La he reemplazado por ésta."
     except ValueError:
         message = "¡Vaya 🥺! Parece que no te he entendido. Para que te 🔔 notifique cuando puedas pedir cita en el " \
                   "sistema de autocita de la Comunidad de Madrid, simplemente dime tu edad (ejemplo: 31) o tu año de " \
