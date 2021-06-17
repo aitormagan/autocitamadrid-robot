@@ -141,7 +141,7 @@ def get_age(input):
         while age is None and i < len(regexs):
             groups = re.findall(regexs[i], input)
             if groups:
-                age = groups[len(groups) - 1]
+                age = int(groups[len(groups) - 1])
 
             i += 1
 
