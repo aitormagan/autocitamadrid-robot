@@ -2,7 +2,9 @@ name: Deploy
 
 on:
   push:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
 
 jobs:
   build:
@@ -29,12 +31,12 @@ jobs:
     - name: Serverless Authentication
       run: sls config credentials --provider aws --key ${{secrets.AWS_ACCESS_KEY_ID}} --secret ${{secrets.AWS_SECRET_ACCESS_KEY}}
     - name: Deploy to AWS [DEV]
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/develop'
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN_DEV }}
       run: serverless deploy -v -s pro
     - name: Deploy to AWS [PRO]
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/main'
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN_PRO }}
       run: serverless deploy -v -s pro
