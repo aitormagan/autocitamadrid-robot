@@ -1,18 +1,8 @@
 import re
 from datetime import datetime
-import telegram_helpers
-import db
-from main_checker import get_min_years
-
-
-def handle_updates(api_response):
-    update_ids = []
-    if "result" in api_response:
-        for update in api_response["result"]:
-            update_ids.append(update.get("update_id"))
-            handle_update(update)
-
-    return max(update_ids) + 1 if update_ids else 0
+from src import telegram_helpers
+from src import db
+from src.checker import get_min_years
 
 
 def handle_update(update):
@@ -59,10 +49,10 @@ def handle_status(update):
     if user_notification:
         age = user_notification["age"]
         if not user_notification["notified"]:
-            message = "¡Genial! Ya tienes activas las notificaciones 🔔 para cuando el sistema de autocita permita " \
+            message = "¡Genial 👏! Ya tienes activas las notificaciones 🔔 para cuando el sistema de autocita permita " \
                       f"pedir cita a personas de {age} o más años. Si quieres cancelarla, simplemente escribe /cancel."
         else:
-            message = f"¡Vaya! Parece que ya te he notificado de que las personas de {age} o más años pueden " \
+            message = f"¡Vaya 🤔! Parece que ya te he notificado de que las personas de {age} o más años pueden " \
                       f"pedir cita. Si quieres puedes crear otra suscripción: simplemente, dime la edad que tienes " \
                       f"o tu año de nacimiento. ¡Estaré encantado de volver a notificarte! 📳"
     else:
@@ -113,7 +103,7 @@ def handle_generic_message(update):
         else:
             user_notification = db.get_user_notification(user_id)
             db.save_notification(user_id, user_name, age)
-            message = f"¡Genial {user_name} 😊! Volverás a saber de mi cuando el sistema de autocitación " \
+            message = f"¡Genial {user_name} ✅! Te notificaré 🔔 en cuando el sistema de autocitación " \
                       f"de la Comunidad de Madrid permita pedir cita a gente con {age} años. Si quieres " \
                       f"cancelar la suscripción, simplemente escribe /cancel."
 
@@ -146,14 +136,3 @@ def get_age(input):
             i += 1
 
     return age
-
-
-def main():
-    offset = 0
-    while True:
-        updates = telegram_helpers.get_updates(offset)
-        offset = handle_updates(updates)
-
-
-if __name__ == '__main__':
-    main()

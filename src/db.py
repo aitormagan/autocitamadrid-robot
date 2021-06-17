@@ -1,6 +1,7 @@
 import boto3
+import os
 
-TABLE_NAME = 'AutocitaMadridNotifications'
+TABLE_NAME = os.environ.get("NOTIFICATIONS_TABLE")
 CLIENT = boto3.client('dynamodb')
 
 __USER_ID = "user_id"

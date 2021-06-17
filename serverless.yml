@@ -1,0 +1,51 @@
+service: vacunacovid-telegrambot
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+  table:
+    dev: "AutocitaMadridNotifications-dev"
+    pro: "AutocitaMadridNotifications"
+
+
+provider:
+  name: aws
+  runtime: python3.7
+  stage: dev
+  timeout: 15
+  region: eu-west-1
+  logRetentionInDays: 7
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "*"
+  environment:
+    NOTIFICATIONS_TABLE: ${self:custom.table.${opt:stage, self:provider.stage}}
+    BOT_TOKEN: ${env:BOT_TOKEN}
+
+functions:
+  message_handler:
+    handler: main.handle_telegram_message
+    events:
+      - http:
+          path: /
+          method: ANY
+          cors: true
+      - http:
+          path: '{proxy+}'
+          method: ANY
+          cors: true
+  checker:
+    handler: main.handle_check
+    events:
+      - schedule: rate(20 minutes)

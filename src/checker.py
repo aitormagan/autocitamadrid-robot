@@ -1,7 +1,7 @@
 import requests
 from datetime import datetime
-from telegram_helpers import send_text
-from db import save_notification, get_non_notified_people
+from src.telegram_helpers import send_text
+from src.db import save_notification, get_non_notified_people
 
 
 def notify(user_info):
@@ -32,7 +32,3 @@ def main():
         if min_years <= person.get("age"):
             notify(person)
             mark_as_notified(person)
-
-
-if __name__ == '__main__':
-    main()
