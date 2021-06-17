@@ -134,14 +134,14 @@ def get_age(input):
         age = int(input)
     except ValueError:
         regexs = [r'\d+/\d+/(\d\d\d\d)', r'\d+-\d+-(\d\d\d\d)',
-                  r'(\d\d\d\d)-\d+-\d+', r'(\d\d\d\d)/\d+/\d+', 
-                  r'\s(\d+)\s']
+                  r'(\d\d\d\d)-\d+-\d+', r'(\d\d\d\d)/\d+/\d+',
+                  r'(\d+)']
 
         i = 0
         while age is None and i < len(regexs):
-            match = re.search(regexs[i], input)
-            if match:
-                age = int(match.group(1))
+            groups = re.findall(regexs[i], input)
+            if groups:
+                age = groups[len(groups) - 1]
 
             i += 1
 
