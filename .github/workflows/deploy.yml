@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 jobs:
   build:
@@ -28,7 +28,13 @@ jobs:
       run: npm install -g serverless-python-requirements
     - name: Serverless Authentication
       run: sls config credentials --provider aws --key ${{secrets.AWS_ACCESS_KEY_ID}} --secret ${{secrets.AWS_SECRET_ACCESS_KEY}}
-    - name: Deploy to AWS
+    - name: Deploy to AWS [DEV]
+      if: github.ref == 'refs/heads/master'
       env:
-        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN_DEV }}
+      run: serverless deploy -v -s pro
+    - name: Deploy to AWS [PRO]
+      if: github.ref == 'refs/heads/master'
+      env:
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN_PRO }}
       run: serverless deploy -v -s pro
