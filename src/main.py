@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 import telegram_helpers
 import db
@@ -99,9 +100,9 @@ def handle_generic_message(update):
     received_message = update.get("message", {}).get("text", "")
     user_id = user_info.get("id")
     user_name = user_info.get('first_name')
+    age = get_age(received_message)
 
-    try:
-        age = int(received_message)
+    if age:
         min_years = get_min_years()
         if age >= 1900:
             age = datetime.now().year - age
@@ -118,12 +119,33 @@ def handle_generic_message(update):
 
             if user_notification and user_notification["age"] != age:
                 message += f"\n\n⚠️ Ya tenías una suscripción activa. La he reemplazado por ésta."
-    except ValueError:
+    else:
         message = "¡Vaya 🥺! Parece que no te he entendido. Para que te 🔔 notifique cuando puedas pedir cita en el " \
                   "sistema de autocita de la Comunidad de Madrid, simplemente dime tu edad (ejemplo: 31) o tu año de " \
                   "nacimiento (ejemplo: 1991)"
 
     telegram_helpers.send_text(user_id, message)
+
+
+def get_age(input):
+    age = None
+
+    try:
+        age = int(input)
+    except ValueError:
+        regexs = [r'\d+/\d+/(\d\d\d\d)', r'\d+-\d+-(\d\d\d\d)',
+                  r'(\d\d\d\d)-\d+-\d+', r'(\d\d\d\d)/\d+/\d+', 
+                  r'\s(\d+)\s']
+
+        i = 0
+        while age is None and i < len(regexs):
+            match = re.search(regexs[i], input)
+            if match:
+                age = int(match.group(1))
+
+            i += 1
+
+    return age
 
 
 def main():
