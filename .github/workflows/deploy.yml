@@ -34,7 +34,7 @@ jobs:
       if: github.ref == 'refs/heads/develop'
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN_DEV }}
-      run: serverless deploy -v -s pro
+      run: serverless deploy -v -s dev
     - name: Deploy to AWS [PRO]
       if: github.ref == 'refs/heads/main'
       env:
