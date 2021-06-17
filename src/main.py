@@ -89,7 +89,7 @@ def handle_subscribe(update):
     user_info = update.get("message", {}).get("from", {})
     user_id = user_info.get("id")
     user_name = user_info.get('first_name')
-    message = f"¡👌 Vale {user_name}! ¿Me dices tu edad o tu fecha de nacimiento?"
+    message = f"¡👌 Vale {user_name}! ¿Me dices tu edad o tu año de nacimiento?"
 
     telegram_helpers.send_text(user_id, message)
 
