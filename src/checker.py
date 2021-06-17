@@ -1,7 +1,10 @@
 import requests
+from aws_lambda_powertools import Logger
 from datetime import datetime
 from src.telegram_helpers import send_text
 from src.db import save_notification, get_non_notified_people
+
+logger = Logger(service="vacunacovidmadridbot")
 
 
 def notify(user_info):
@@ -30,5 +33,6 @@ def main():
 
     for person in non_notified:
         if min_years <= person.get("age"):
+            logger.info(f"Notifying user with id {person['user_id']}")
             notify(person)
             mark_as_notified(person)
