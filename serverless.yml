@@ -47,5 +47,6 @@ functions:
           cors: true
   checker:
     handler: main.handle_check
+    timeout: 900
     events:
       - schedule: rate(20 minutes)
