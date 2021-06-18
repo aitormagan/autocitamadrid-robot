@@ -7,9 +7,9 @@ from src.db import save_notification, get_non_notified_people
 logger = Logger(service="vacunacovidmadridbot")
 
 
-def notify(user_info):
+def notify(min_years, user_info):
     message = f"‼️ ¡Buenas noticias {user_info['name']}! El sistema de vacunación de la Comunidad de Madrid ya " \
-              f"permite pedir cita a gente con {user_info['age']} años o más. ¡🏃 Corre y pide tu cita en 🔗 " \
+              f"permite pedir cita a gente con {min_years} años o más. ¡🏃 Corre y pide tu cita en 🔗 " \
               f"https://autocitavacuna.sanidadmadrid.org/ohcitacovid/!"
     send_text(user_info["user_id"], message)
 
@@ -34,5 +34,5 @@ def main():
     for person in non_notified:
         if min_years <= person.get("age"):
             logger.info(f"Notifying user with id {person['user_id']}")
-            notify(person)
+            notify(min_years, person)
             mark_as_notified(person)
