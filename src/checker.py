@@ -20,7 +20,7 @@ def mark_as_notified(user_info):
 
 def get_min_years():
     data = requests.get("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/assets/config/app-config.json",
-                        verify=False).json()
+                        verify=False, timeout=5).json()
 
     max_birthday = datetime.strptime(data["dFin_Birthday"], "%d/%m/%Y")
     curr_date = datetime.now()
