@@ -9,6 +9,12 @@ custom:
   table:
     dev: "AutocitaMadridNotifications-dev"
     pro: "AutocitaMadridNotifications"
+  tablename:
+    dev: "vaccine-notifications-dev"
+    pro: "vaccine-notifications-pro"
+  throughput:
+    dev: 1
+    pro: 5
 
 
 provider:
@@ -50,3 +56,19 @@ functions:
     timeout: 900
     events:
       - schedule: rate(20 minutes)
+
+resources:
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tablename.${opt:stage, self:provider.stage}}
+        AttributeDefinitions:
+          - AttributeName: user_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: user_id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: ${self:custom.throughput.${opt:stage, self:provider.stage}}
+          WriteCapacityUnits: ${self:custom.throughput.${opt:stage, self:provider.stage}}
