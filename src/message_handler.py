@@ -28,7 +28,7 @@ def handle_update(update):
 
     update["answer"] = answer
     logger.info(update)
-    telegram_helpers.send_text(user_info.get("id"), message)
+    telegram_helpers.send_text(user_info.get("id"), answer)
 
 
 def handle_start(update):
@@ -144,4 +144,4 @@ def get_age(user_input):
     if age and age >= 1900:
         age = datetime.now().year - age
 
-    return age if 0 <= age <= 120 else None
+    return age if age and 0 <= age <= 120 else None
