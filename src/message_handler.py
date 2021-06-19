@@ -62,8 +62,9 @@ def handle_status(update):
     if user_notification:
         age = user_notification["age"]
         if not user_notification["notified"]:
-            message = "¡Genial 👏! Ya tienes activas las notificaciones 🔔 para cuando el sistema de autocita permita " \
-                      f"pedir cita a personas de {age} o más años. Si quieres cancelarla, simplemente escribe /cancel."
+            message = "¡Todo listo 👏! Ya tienes activas las notificaciones 🔔 para cuando el sistema de autocita " \
+                      f"permita pedir cita a personas de {age} o más años. Si quieres cancelarla, simplemente " \
+                      f"escribe /cancel."
         else:
             message = f"¡Vaya 🤔! Parece que ya te he notificado de que las personas de {age} o más años pueden " \
                       f"pedir cita. Si quieres puedes crear otra suscripción: simplemente, dime la edad que tienes " \
