@@ -141,7 +141,7 @@ def get_age(user_input):
 
             i += 1
 
-    if age and age >= 1900:
+    if age is not None and age >= 1900:
         age = datetime.now().year - age
 
-    return age if age and 0 <= age <= 120 else None
+    return age if age is not None and 0 <= age <= 120 else None
