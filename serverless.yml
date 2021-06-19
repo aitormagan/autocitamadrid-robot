@@ -7,9 +7,6 @@ custom:
   pythonRequirements:
     dockerizePip: non-linux
   table:
-    dev: "AutocitaMadridNotifications-dev"
-    pro: "AutocitaMadridNotifications"
-  tablename:
     dev: "vaccine-notifications-dev"
     pro: "vaccine-notifications-pro"
   throughput:
