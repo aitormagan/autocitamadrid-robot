@@ -100,7 +100,7 @@ def handle_generic_message(update):
     user_name = user_info.get('first_name')
     age = get_age(received_message)
 
-    if age:
+    if age is not None:
         min_years = get_min_years()
 
         if age >= min_years:
