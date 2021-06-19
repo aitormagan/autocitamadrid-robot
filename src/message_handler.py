@@ -1,45 +1,53 @@
 import re
 from datetime import datetime
+from aws_lambda_powertools import Logger
 from src import telegram_helpers
 from src import db
 from src.checker import get_min_years
 
 
+logger = Logger(service="vacunacovidmadridbot")
+
+
 def handle_update(update):
     message = update.get("message", {}).get("text", "")
+    user_info = update.get("message", {}).get("from", {})
+
     if message in ["/start", "/help"]:
-        handle_start(update)
+        answer = handle_start(update)
     elif message == "/cancel":
-        handle_cancel(update)
+        answer = handle_cancel(update)
     elif message == "/status":
-        handle_status(update)
+        answer = handle_status(update)
     elif message == "/currentage":
-        handle_current_age(update)
+        answer = handle_current_age(update)
     elif message == "/subscribe":
-        handle_subscribe(update)
+        answer = handle_subscribe(update)
     else:
-        handle_generic_message(update)
+        answer = handle_generic_message(update)
+
+    update["answer"] = answer
+    logger.info(update)
+    telegram_helpers.send_text(user_info.get("id"), answer)
 
 
 def handle_start(update):
     user_info = update.get("message", {}).get("from", {})
     name = user_info.get("first_name", "")
-    message = f"¡Hola {name}! Bienvenido al sistema de notificación de vacunación. Si quieres que te avise 🔔 cuando " \
-              f"puedas pedir cita para vacunarte 💉 en la Comunidad de Madrid, simplemente indicame la edad que " \
-              f"tienes o tu año de nacimiento!\n\nOtros comandos útiles:\n-/subscribe: 🔔 Crea una suscripción para " \
-              f"cuando puedas pedir cita para vacunarte\n- /help: 🙋 Muestra esta ayuda\n- /status: " \
-              f"ℹ️ Muestra si ya estás suscrito\n- /cancel: 🔕 Cancela la notificación registrada\n - /currentage: " \
-              f"📆 Muestra la edad mínima con la que puedes pedir cita"
-    telegram_helpers.send_text(user_info.get("id"), message)
+    return f"¡Hola {name}! Bienvenido al sistema de notificación de vacunación. Si quieres que te avise 🔔 cuando " \
+           f"puedas pedir cita para vacunarte 💉 en la Comunidad de Madrid, simplemente indicame la edad que " \
+           f"tienes o tu año de nacimiento!\n\nOtros comandos útiles:\n-/subscribe: 🔔 Crea una suscripción para " \
+           f"cuando puedas pedir cita para vacunarte\n- /help: 🙋 Muestra esta ayuda\n- /status: " \
+           f"ℹ️ Muestra si ya estás suscrito\n- /cancel: 🔕 Cancela la notificación registrada\n - /currentage: " \
+           f"📆 Muestra la edad mínima con la que puedes pedir cita"
 
 
 def handle_cancel(update):
     user_info = update.get("message", {}).get("from", {})
     user_id = user_info.get("id")
     db.delete_notification(user_id)
-    message = f"¡Vale {user_info.get('first_name')}! He borrado ❌ tus datos y ya no te notificaré. Si quieres volver " \
-              f"a activar la suscripción, simplemente di /start"
-    telegram_helpers.send_text(user_id, message)
+    return f"¡Vale {user_info.get('first_name')}! He borrado ❌ tus datos y ya no te notificaré. Si quieres volver " \
+           f"a activar la suscripción, simplemente di /start"
 
 
 def handle_status(update):
@@ -58,7 +66,8 @@ def handle_status(update):
     else:
         message = "Actualmente no tienes ninguna notificación registrada 😓. Si quieres que te notifique 🔔 cuando " \
                   "puedas pedir cita para vacunarte simplemente dime tu año de nacimiento o tu edad."
-    telegram_helpers.send_text(user_id, message)
+
+    return message
 
 
 def handle_current_age(update):
@@ -73,16 +82,15 @@ def handle_current_age(update):
         message += "\n\n⚠️ Puedo notificarte 🔔 cuando el sistema de autocitación permita vacunar a gente con tu " \
                    "edad. Simplemente dime tu edad o tu año de nacimiento."
 
-    telegram_helpers.send_text(user_id, message)
+    return message
 
 
 def handle_subscribe(update):
     user_info = update.get("message", {}).get("from", {})
-    user_id = user_info.get("id")
     user_name = user_info.get('first_name')
     message = f"¡👌 Vale {user_name}! ¿Me dices tu edad o tu año de nacimiento?"
 
-    telegram_helpers.send_text(user_id, message)
+    return message
 
 
 def handle_generic_message(update):
@@ -92,10 +100,8 @@ def handle_generic_message(update):
     user_name = user_info.get('first_name')
     age = get_age(received_message)
 
-    if age:
+    if age is not None:
         min_years = get_min_years()
-        if age >= 1900:
-            age = datetime.now().year - age
 
         if age >= min_years:
             message = "‼️ ¡Ey! Parece que el sistema ya te permite pedir cita. ¡Hazlo ya en 🔗 " \
@@ -114,25 +120,28 @@ def handle_generic_message(update):
                   "sistema de autocita de la Comunidad de Madrid, simplemente dime tu edad (ejemplo: 31) o tu año de " \
                   "nacimiento (ejemplo: 1991)"
 
-    telegram_helpers.send_text(user_id, message)
+    return message
 
 
-def get_age(input):
+def get_age(user_input):
     age = None
 
     try:
-        age = int(input)
+        age = int(user_input)
     except ValueError:
-        regexs = [r'\d+/\d+/(\d\d\d\d)', r'\d+-\d+-(\d\d\d\d)',
-                  r'(\d\d\d\d)-\d+-\d+', r'(\d\d\d\d)/\d+/\d+',
-                  r'(\d+)']
+        regular_expressions = [r'\d+/\d+/(\d\d\d\d)', r'\d+-\d+-(\d\d\d\d)',
+                               r'(\d\d\d\d)-\d+-\d+', r'(\d\d\d\d)/\d+/\d+',
+                               r'(\d+)']
 
         i = 0
-        while age is None and i < len(regexs):
-            groups = re.findall(regexs[i], input)
+        while age is None and i < len(regular_expressions):
+            groups = re.findall(regular_expressions[i], user_input)
             if groups:
                 age = int(groups[len(groups) - 1])
 
             i += 1
 
-    return age
+    if age is not None and age >= 1900:
+        age = datetime.now().year - age
+
+    return age if age is not None and 0 <= age <= 120 else None

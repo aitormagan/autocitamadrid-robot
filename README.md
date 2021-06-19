@@ -12,3 +12,6 @@ Para el funcionamiento se dispone de la siguiente infraestructura sobre AWS:
   * Ayuda, etc.
 * Otra lambda, que se ejecuta cada 20 minutos, y que comprueba si ha cambiado la edad para pedir cita y notificar a 
 quien corresponda.
+
+Para que Telegram llame a la API desplegada, hay que acceder a la siguiente URL: `
+https://api.telegram.org/bot<BOT_TOKEN>/setWebHook?url=<APIGW_URL>`
