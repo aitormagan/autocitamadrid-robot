@@ -59,7 +59,7 @@ resources:
     usersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:custom.tablename.${opt:stage, self:provider.stage}}
+        TableName: ${self:custom.table.${opt:stage, self:provider.stage}}
         AttributeDefinitions:
           - AttributeName: user_id
             AttributeType: S
