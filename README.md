@@ -1,5 +1,8 @@
 # Telegram Bot - Autocita Madrid
 
+[![Deploy](https://github.com/aitormagan/autocitamadrid-robot/actions/workflows/deploy.yml/badge.svg)](https://github.com/aitormagan/autocitamadrid-robot/actions/workflows/deploy.yml)
+[![Coverage Status](https://coveralls.io/repos/github/aitormagan/autocitamadrid-robot/badge.svg)](https://coveralls.io/github/aitormagan/autocitamadrid-robot)
+
 Robot de Telegram que te notifica en cuanto la Comunidad de Madrid permite vacunarse a gente de la edad seleccionada 
 por el usuario.
 
