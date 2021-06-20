@@ -2,10 +2,23 @@ service: vacunacovid-telegrambot
 
 plugins:
   - serverless-python-requirements
+  - serverless-plugin-aws-alerts
 
 custom:
   pythonRequirements:
     dockerizePip: non-linux
+  alerts:
+    stages:
+      - dev
+      - pro
+    topics:
+      alarm:
+        topic: ${self:service}-${opt:stage}-alerts-alarm
+        notifications:
+          - protocol: email
+            endpoint: ${env:NOTIFICATIONS_EMAIL}
+    alarms:
+      - functionErrors
   table:
     dev: "vaccine-notifications-dev"
     pro: "vaccine-notifications-pro"
