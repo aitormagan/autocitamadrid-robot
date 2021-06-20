@@ -52,4 +52,5 @@ jobs:
       if: github.ref == 'refs/heads/main'
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN_PRO }}
+        NOTIFICATIONS_EMAIL: ${{ secrets.NOTIFICATIONS_EMAIL }}
       run: serverless deploy -v -s pro
