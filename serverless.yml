@@ -19,7 +19,6 @@ custom:
             endpoint: ${env:NOTIFICATIONS_EMAIL}
     alarms:
       - functionErrors
-      - functionThrottles
   table:
     dev: "vaccine-notifications-dev"
     pro: "vaccine-notifications-pro"
