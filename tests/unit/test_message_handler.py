@@ -241,6 +241,42 @@ def test_given_subscribed_when_handle_current_age_then_message_with_age(get_min_
     db_mock.get_user_notification.assert_called_once_with(user_id)
 
 
+def test_when_handle_subscribe_then_ask_for_age():
+    name = "Aitor"
+
+    answer = message_handler.handle_subscribe({
+        "message": {
+            "from": {
+                "first_name": name
+            }
+        }
+    })
+
+    assert name in answer
+    assert "edad o tu año de nacimiento" in answer
+
+
+def test_when_handle_start_then_ask_for_age():
+    name = "Aitor"
+
+    answer = message_handler.handle_start({
+        "message": {
+            "from": {
+                "first_name": name
+            }
+        }
+    })
+
+    assert name in answer
+    assert "la edad que tienes" in answer
+    assert "año de nacimiento" in answer
+    assert "Otros comandos útiles" in answer
+    assert "/help" in answer
+    assert "/subscribe" in answer
+    assert "/cancel" in answer
+    assert "/status" in answer
+    assert "/currentage" in answer
+
 @patch("src.message_handler.telegram_helpers")
 @patch("src.message_handler.handle_start")
 @patch("src.message_handler.handle_cancel")
@@ -448,11 +484,3 @@ def test_given_exception_when_handle_update_then_sorry_message(handle_generic_me
 
     telegram_helpers_mock.send_text.assert_called_once_with(user_id, ANY)
     assert "Perdoname" in telegram_helpers_mock.send_text.call_args[0][1]
-
-
-
-
-
-
-
-
