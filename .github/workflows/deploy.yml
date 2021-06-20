@@ -39,13 +39,14 @@ jobs:
     - name: Install Serverless Framework
       run: npm install -g serverless
     - name: Install serverless dependencies
-      run: npm install -g serverless-python-requirements
+      run: npm install -g serverless-python-requirements serverless-plugin-aws-alerts
     - name: Serverless Authentication
       run: sls config credentials --provider aws --key ${{secrets.AWS_ACCESS_KEY_ID}} --secret ${{secrets.AWS_SECRET_ACCESS_KEY}}
     - name: Deploy to AWS [DEV]
       if: github.ref == 'refs/heads/develop'
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN_DEV }}
+        NOTIFICATIONS_EMAIL: ${{ secrets.NOTIFICATIONS_EMAIL }}
       run: serverless deploy -v -s dev
     - name: Deploy to AWS [PRO]
       if: github.ref == 'refs/heads/main'
