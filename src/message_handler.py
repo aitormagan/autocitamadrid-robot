@@ -36,6 +36,12 @@ def handle_update(update):
         update["answer"] = answer
         logger.info(update)
         telegram_helpers.send_text(user_id, answer)
+    elif "my_chat_member" in update and "new_chat_member" in update["my_chat_member"] \
+            and "status" in update["my_chat_member"]["new_chat_member"] \
+            and update["my_chat_member"]["new_chat_member"]["status"] == "kicked":
+        user_id = update["my_chat_member"]["from"]["id"]
+        logger.info(f"User with id {user_id} stopped the bot")
+        db.delete_notification(user_id)
 
 
 def handle_start(update):

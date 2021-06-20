@@ -484,3 +484,46 @@ def test_given_exception_when_handle_update_then_sorry_message(handle_generic_me
 
     telegram_helpers_mock.send_text.assert_called_once_with(user_id, ANY)
     assert "Perdoname" in telegram_helpers_mock.send_text.call_args[0][1]
+
+
+@patch("src.message_handler.db")
+def test_given_user_kicked_bot_when_handle_update_then_notification_cancelled(db_mock):
+    user_id = MagicMock()
+    message = {
+        "my_chat_member": {
+            "chat": {
+                "id": user_id,
+                "first_name": "Aitor",
+                "type": "private"
+            },
+            "from": {
+                "id": user_id,
+                "is_bot": False,
+                "first_name": "Aitor",
+                "language_code": "es"
+            },
+            "old_chat_member": {
+                "user": {
+                    "id": MagicMock(),
+                    "is_bot": True,
+                    "first_name": "Vacuna Covid Madrid",
+                    "username": "vacunacovidmadridbot"
+                },
+                "status": "member"
+            },
+            "new_chat_member": {
+                "user": {
+                    "id": MagicMock(),
+                    "is_bot": True,
+                    "first_name": "Vacuna Covid Madrid",
+                    "username": "vacunacovidmadridbot"
+                },
+                "status": "kicked",
+                "until_date": 0
+            }
+        }
+    }
+
+    message_handler.handle_update(message)
+
+    db_mock.delete_notification.assert_called_once_with(user_id)
