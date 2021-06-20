@@ -10,30 +10,32 @@ logger = Logger(service="vacunacovidmadridbot")
 
 
 def handle_update(update):
-    try:
-        message = update.get("message", {}).get("text", "")
-        user_info = update.get("message", {}).get("from", {})
+    message = update.get("message", {}).get("text", "")
+    user_info = update.get("message", {}).get("from", {})
+    user_id = user_info.get("id")
 
-        if message in ["/start", "/help"]:
-            answer = handle_start(update)
-        elif message == "/cancel":
-            answer = handle_cancel(update)
-        elif message == "/status":
-            answer = handle_status(update)
-        elif message == "/currentage":
-            answer = handle_current_age(update)
-        elif message == "/subscribe":
-            answer = handle_subscribe(update)
-        else:
-            answer = handle_generic_message(update)
-    except Exception:
-        logger.exception("Unexpected error")
-        answer = "Perdoname 🙏, pero ha ocurrido un error inesperado 🤷 que me impide responder a tu solicitud. " \
-                 "¿Podrías volver a intentarlo pasados unos minutos? Gracias 😃"
+    if user_id:
+        try:
+            if message in ["/start", "/help"]:
+                answer = handle_start(update)
+            elif message == "/cancel":
+                answer = handle_cancel(update)
+            elif message == "/status":
+                answer = handle_status(update)
+            elif message == "/currentage":
+                answer = handle_current_age(update)
+            elif message == "/subscribe":
+                answer = handle_subscribe(update)
+            else:
+                answer = handle_generic_message(update)
+        except Exception:
+            logger.exception("Unexpected error")
+            answer = "Perdoname 🙏, pero ha ocurrido un error inesperado 🤷 que me impide responder a tu solicitud. " \
+                     "¿Podrías volver a intentarlo pasados unos minutos? Gracias 😃"
 
-    update["answer"] = answer
-    logger.info(update)
-    telegram_helpers.send_text(user_info.get("id"), answer)
+        update["answer"] = answer
+        logger.info(update)
+        telegram_helpers.send_text(user_id, answer)
 
 
 def handle_start(update):
