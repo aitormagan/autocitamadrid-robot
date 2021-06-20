@@ -19,6 +19,10 @@ custom:
             endpoint: ${env:NOTIFICATIONS_EMAIL}
     alarms:
       - functionErrors
+    definitions:
+      functionErrors:
+        treatMissingData: notBreaching
+
   table:
     dev: "vaccine-notifications-dev"
     pro: "vaccine-notifications-pro"
