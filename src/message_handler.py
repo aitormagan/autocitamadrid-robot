@@ -1,6 +1,8 @@
 import re
 from datetime import datetime
+from collections import defaultdict
 from aws_lambda_powertools import Logger
+import requests
 from src import telegram_helpers
 from src import db
 from src.checker import get_min_years
@@ -26,6 +28,8 @@ def handle_update(update):
                 answer = handle_current_age(update)
             elif message == "/subscribe":
                 answer = handle_subscribe(update)
+            elif message == "/minage":
+                answer = handle_min_date(update)
             else:
                 answer = handle_generic_message(update)
         except Exception:
@@ -52,7 +56,8 @@ def handle_start(update):
            f"tienes o tu año de nacimiento!\n\nOtros comandos útiles:\n-/subscribe: 🔔 Crea una suscripción para " \
            f"cuando puedas pedir cita para vacunarte\n- /help: 🙋 Muestra esta ayuda\n- /status: " \
            f"ℹ️ Muestra si ya estás suscrito\n- /cancel: 🔕 Cancela la notificación registrada\n - /currentage: " \
-           f"📆 Muestra la edad mínima con la que puedes pedir cita"
+           f"📆 Muestra la edad mínima con la que puedes pedir cita\n - /minage: 📆 Muestra una lista de las primeras " \
+           f"citas disponibles en los distintos hospitales."
 
 
 def handle_cancel(update):
@@ -159,3 +164,48 @@ def get_age(user_input):
         age = datetime.now().year - age
 
     return age if age is not None and 0 <= age <= 120 else None
+
+
+def handle_min_date(update):
+    centres = requests.post("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerCentros",
+                            json={"edad_paciente": 63}, verify=False).json()
+
+    centres_by_date = defaultdict(lambda: list())
+
+    for centre in centres:
+        data = requests.post("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerHuecosMes",
+                             json=get_body(centre["idCentro"], centre["idPrestacion"], centre["agendas"]),
+                             verify=False).json()
+
+        dates = [x.get("fecha") for x in data]
+        dates = [datetime.strptime(x, "%d-%m-%Y") for x in dates]
+        if dates:
+            centres_by_date[min(dates)].append(centre['descripcion'])
+
+    if centres_by_date:
+        message = "¡Qué guay 😎! Parece que hay citas disponibles. Aquí tienes la lista por fechas:\n\n"
+        for date in sorted(centres_by_date.keys()):
+            date_str = date.strftime("%d/%m/%Y")
+            centres = "\n".join(map(lambda x: f"- {x}", centres_by_date[date]))
+            message += f"{date_str}:\n{centres}\n\n"
+    else:
+        message = "No he sido capaz de encontrar citas disponibles para este mes. Pruébalo de nuevo más tarde."
+
+    return message
+
+
+def get_body(id_centre, id_prestacion, agendas):
+    today = datetime.now()
+    return {
+        "idPaciente": "1",
+        "idPrestacion": id_prestacion,
+        "agendas": agendas,
+        "idCentro": id_centre,
+        "mes": today.month,
+        "anyo": today.year,
+        "horaInicio": "08:00",
+        "horaFin": "22:00"
+    }
+
+if __name__ == '__main__':
+    print(handle_min_date(None))

@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - feature/min_date
 
 jobs:
   build:
@@ -43,7 +44,7 @@ jobs:
     - name: Serverless Authentication
       run: sls config credentials --provider aws --key ${{secrets.AWS_ACCESS_KEY_ID}} --secret ${{secrets.AWS_SECRET_ACCESS_KEY}}
     - name: Deploy to AWS [DEV]
-      if: github.ref == 'refs/heads/develop'
+      if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/feature/min_date'
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN_DEV }}
         NOTIFICATIONS_EMAIL: ${{ secrets.NOTIFICATIONS_EMAIL }}
