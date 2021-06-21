@@ -74,9 +74,9 @@ def handle_status(update):
                       f"permita pedir cita a personas de {age} o más años. Si quieres cancelarla, simplemente " \
                       f"escribe /cancel."
         else:
-            message = f"¡Vaya 🤔! Parece que ya te he notificado de que las personas de {age} o más años pueden " \
-                      f"pedir cita. Si quieres puedes crear otra suscripción: simplemente, dime la edad que tienes " \
-                      f"o tu año de nacimiento. ¡Estaré encantado de volver a notificarte! 📳"
+            message = "¡Vaya 🤔! Parece que ya te he notificado de que puedes pedir cita para vacunarte. " \
+                      "Si quieres puedes crear otra suscripción: simplemente, dime la edad que tienes " \
+                      "o tu año de nacimiento. ¡Estaré encantado de volver a notificarte! 📳"
     else:
         message = "Actualmente no tienes ninguna notificación registrada 😓. Si quieres que te notifique 🔔 cuando " \
                   "puedas pedir cita para vacunarte simplemente dime tu año de nacimiento o tu edad."

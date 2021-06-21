@@ -9,7 +9,6 @@ custom:
     dockerizePip: non-linux
   alerts:
     stages:
-      - dev
       - pro
     topics:
       alarm:
