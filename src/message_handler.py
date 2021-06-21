@@ -207,6 +207,3 @@ def get_body(id_centre, id_prestacion, agendas):
         "horaInicio": "08:00",
         "horaFin": "22:00"
     }
-
-if __name__ == '__main__':
-    print(handle_min_date(None))
