@@ -28,7 +28,7 @@ def handle_update(update):
                 answer = handle_current_age(update)
             elif message == "/subscribe":
                 answer = handle_subscribe(update)
-            elif message == "/minage":
+            elif message == "/mindate":
                 telegram_helpers.send_text(user_id, "⌛ Dame unos segundos mientras lo comprueblo...")
                 answer = handle_min_date(update)
             else:
@@ -57,7 +57,7 @@ def handle_start(update):
            f"tienes o tu año de nacimiento!\n\nOtros comandos útiles:\n-/subscribe: 🔔 Crea una suscripción para " \
            f"cuando puedas pedir cita para vacunarte\n- /help: 🙋 Muestra esta ayuda\n- /status: " \
            f"ℹ️ Muestra si ya estás suscrito\n- /cancel: 🔕 Cancela la notificación registrada\n - /currentage: " \
-           f"📆 Muestra la edad mínima con la que puedes pedir cita\n - /minage: 📆 Muestra una lista de las primeras " \
+           f"📆 Muestra la edad mínima con la que puedes pedir cita\n - /mindate: 📆 Muestra una lista de las primeras " \
            f"citas disponibles en los distintos hospitales."
 
 
