@@ -12,7 +12,7 @@ __NAME = "name"
 __AGE = "age"
 __NOTIFIED = "notified"
 
-__MIN_DATE_PARAMETER = "/autocita/madrid/min-date-ifno"
+__MIN_DATE_PARAMETER = os.environ.get("PARAM_MIN_DATE")
 __CENTRES_BY_DATE = "centres_by_date"
 __UPDATED_AT = "updated_at"
 __DATE_FORMAT = "%Y%m%d"

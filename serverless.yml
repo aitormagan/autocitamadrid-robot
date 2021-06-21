@@ -21,7 +21,9 @@ custom:
     definitions:
       functionErrors:
         treatMissingData: notBreaching
-
+  min_date_param:
+    dev: "/autocita/madrid/dev/min-date-info"
+    pro: "/autocita/madrid/pro/min-date-info"
   table:
     dev: "vaccine-notifications-dev"
     pro: "vaccine-notifications-pro"
@@ -52,6 +54,7 @@ provider:
         - "*"
   environment:
     NOTIFICATIONS_TABLE: ${self:custom.table.${opt:stage, self:provider.stage}}
+    PARAM_MIN_DATE: ${self:custom.min_date_param.${opt:stage, self:provider.stage}}
     BOT_TOKEN: ${env:BOT_TOKEN}
 
 functions:
