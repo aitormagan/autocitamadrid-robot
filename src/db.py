@@ -1,13 +1,21 @@
 import boto3
 import os
+import json
+from datetime import datetime
 
 TABLE_NAME = os.environ.get("NOTIFICATIONS_TABLE")
 CLIENT = boto3.client('dynamodb')
+CLIENT_SSM = boto3.client('ssm')
 
 __USER_ID = "user_id"
 __NAME = "name"
 __AGE = "age"
 __NOTIFIED = "notified"
+
+__MIN_DATE_PARAMETER = "/autocita/madrid/min-date-ifno"
+__CENTRES_BY_DATE = "centres_by_date"
+__UPDATED_AT = "updated_at"
+__DATE_FORMAT = "%Y%m%d"
 
 
 def save_notification(user_id, name, age, notified=False):
@@ -43,3 +51,22 @@ def __parse_item(item):
         "user_id": item[__USER_ID]["S"],
         "notified": item[__NOTIFIED]["BOOL"]
     }
+
+
+def save_min_date_info(centres_by_date, update_time):
+    centres_by_date = {k.strftime(__DATE_FORMAT): v for k, v in centres_by_date.items()}
+    CLIENT_SSM.put_parameter(Name=__MIN_DATE_PARAMETER, Value=json.dumps({
+        "updated_at": int(update_time.timestamp()),
+        "centres_by_date": centres_by_date
+    }), Overwrite=True, Type="String")
+
+
+def get_min_date_info():
+    try:
+        param_info = CLIENT_SSM.get_parameter(Name=__MIN_DATE_PARAMETER)
+        decoded_content = json.loads(param_info["Parameter"]["Value"])
+        centres_by_date = decoded_content[__CENTRES_BY_DATE]
+        centres_by_date = {datetime.strptime(k, __DATE_FORMAT): v for k, v in centres_by_date.items()}
+        return centres_by_date, datetime.fromtimestamp(decoded_content[__UPDATED_AT])
+    except CLIENT_SSM.exceptions.ParameterNotFound:
+        return {}, None

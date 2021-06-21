@@ -7,9 +7,6 @@ from src import telegram_helpers
 from src import db
 from src.checker import get_min_years
 
-__CENTRES_BY_DATE = defaultdict(lambda: list())
-__LAST_UPDATE_CENTRES = None
-
 
 logger = Logger(service="vacunacovidmadridbot")
 
@@ -171,11 +168,12 @@ def get_age(user_input):
 
 
 def handle_min_date(update):
-    global __LAST_UPDATE_CENTRES
 
-    if __LAST_UPDATE_CENTRES is None or (datetime.now() - __LAST_UPDATE_CENTRES).seconds >= 1200:
-        __CENTRES_BY_DATE.clear()
+    centres_by_date, last_update = db.get_min_date_info()
 
+    if last_update is None or (datetime.now() - last_update).seconds >= 1200:
+
+        centres_by_date = defaultdict(lambda: list())
         centres = requests.post("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerCentros",
                                 json={"edad_paciente": 45}, verify=False).json()
 
@@ -191,17 +189,22 @@ def handle_min_date(update):
             dates = [x.get("fecha") for x in data_curr_month + data_next_month]
             dates = [datetime.strptime(x, "%d-%m-%Y") for x in dates]
             if dates:
-                __CENTRES_BY_DATE[min(dates)].append(centre['descripcion'])
-                __LAST_UPDATE_CENTRES = datetime.now()
+                centres_by_date[min(dates)].append(centre['descripcion'])
 
-    if __CENTRES_BY_DATE:
+        last_update = datetime.now()
+        db.save_min_date_info(centres_by_date, last_update)
+
+    if centres_by_date:
         message = "¡Qué guay 😎! Parece que hay citas disponibles. Aquí tienes la lista por fechas:\n\n"
-        for date in sorted(__CENTRES_BY_DATE.keys()):
+        for date in sorted(centres_by_date.keys()):
             date_str = date.strftime("%d/%m/%Y")
-            centres = "\n".join(map(lambda x: f"- {x}", __CENTRES_BY_DATE[date]))
+            centres = "\n".join(map(lambda x: f"- {x}", centres_by_date[date]))
             message += f"{date_str}:\n{centres}\n\n"
-        updated_str = __LAST_UPDATE_CENTRES.strftime("el %d/%m/%Y a las %H:%M:%S")
-        message += f"Actualizado {updated_str}"
+
+        updated_ago = int((datetime.now() - last_update).seconds / 60)
+        updated_at_msg = f"Actualizado hace {updated_ago} minutos"
+        updated_at_msg = updated_at_msg[:-1] if updated_ago == 1 else updated_at_msg
+        message += updated_at_msg
     else:
         message = "No he sido capaz de encontrar citas disponibles. Pruébalo de nuevo más tarde."
 
@@ -222,6 +225,3 @@ def get_body(id_centre, id_prestacion, agendas, month_modified=0):
         "horaInicio": "08:00",
         "horaFin": "22:00"
     }
-
-if __name__ == '__main__':
-    print(handle_min_date(None))
