@@ -47,7 +47,7 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
         - ssm:PutParameter
-        - ssm:GerParameter
+        - ssm:GetParameter
       Resource:
         - "*"
   environment:
