@@ -201,7 +201,7 @@ def handle_min_date(update):
             centres = "\n".join(map(lambda x: f"- {x}", __CENTRES_BY_DATE[date]))
             message += f"{date_str}:\n{centres}\n\n"
         updated_str = __LAST_UPDATE_CENTRES.strftime("el %d/%m/%Y a las %H:%M:%S")
-        message += f"Actualiazdo {updated_str}"
+        message += f"Actualizado {updated_str}"
     else:
         message = "No he sido capaz de encontrar citas disponibles. Pruébalo de nuevo más tarde."
 
