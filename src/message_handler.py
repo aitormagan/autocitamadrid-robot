@@ -29,6 +29,7 @@ def handle_update(update):
             elif message == "/subscribe":
                 answer = handle_subscribe(update)
             elif message == "/minage":
+                telegram_helpers.send_text(user_id, "⌛ Dame unos segundos mientras lo comprueblo...")
                 answer = handle_min_date(update)
             else:
                 answer = handle_generic_message(update)
