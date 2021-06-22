@@ -181,7 +181,7 @@ def handle_min_date(_):
         for date in sorted(centres_by_date.keys()):
             date_str = date.strftime("%d/%m/%Y")
             centres = "\n".join(map(lambda x: f"- {x}", centres_by_date[date]))
-            message += f"*{date_str}*:\n{centres}\n\n"
+            message += f"{date_str}:\n{centres}\n\n"
 
         updated_ago = int((datetime.now() - last_update).seconds / 60)
         updated_at_msg = f"Actualizado hace {updated_ago} minutos"
