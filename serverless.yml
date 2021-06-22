@@ -30,6 +30,9 @@ custom:
   throughput:
     dev: 1
     pro: 5
+  update_centres_time:
+    dev: 300
+    pro: 1200
 
 
 provider:
@@ -56,6 +59,7 @@ provider:
     NOTIFICATIONS_TABLE: ${self:custom.table.${opt:stage, self:provider.stage}}
     PARAM_MIN_DATE: ${self:custom.min_date_param.${opt:stage, self:provider.stage}}
     BOT_TOKEN: ${env:BOT_TOKEN}
+    UPDATE_CENTRES_TIME: ${self:custom.update_centres_time.${opt:stage, self:provider.stage}}
 
 functions:
   message_handler:

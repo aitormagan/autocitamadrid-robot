@@ -1,4 +1,5 @@
 import re
+import os
 from datetime import datetime, timedelta
 from collections import defaultdict
 from aws_lambda_powertools import Logger
@@ -8,6 +9,7 @@ from src import db
 from src.checker import get_min_years
 
 
+UPDATE_CENTRES_TIME = int(os.environ.get("UPDATE_CENTRES_TIME", 300))
 logger = Logger(service="vacunacovidmadridbot")
 
 
@@ -167,39 +169,19 @@ def get_age(user_input):
     return age if age is not None and 0 <= age <= 120 else None
 
 
-def handle_min_date(update):
+def handle_min_date(_):
 
     centres_by_date, last_update = db.get_min_date_info()
 
     if last_update is None or (datetime.now() - last_update).seconds >= 1200:
-
-        centres_by_date = defaultdict(lambda: list())
-        centres = requests.post("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerCentros",
-                                json={"edad_paciente": 45}, verify=False).json()
-
-        for centre in centres:
-            data_curr_month = requests.post("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerHuecosMes",
-                                            json=get_body(centre["idCentro"], centre["idPrestacion"], centre["agendas"]),
-                                            verify=False).json()
-            data_next_month = requests.post("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerHuecosMes",
-                                            json=get_body(centre["idCentro"], centre["idPrestacion"], centre["agendas"],
-                                                          month_modified=1),
-                                            verify=False).json()
-
-            dates = [x.get("fecha") for x in data_curr_month + data_next_month]
-            dates = [datetime.strptime(x, "%d-%m-%Y") for x in dates]
-            if dates:
-                centres_by_date[min(dates)].append(centre['descripcion'])
-
-        last_update = datetime.now()
-        db.save_min_date_info(centres_by_date, last_update)
+        centres_by_date, last_update = update_centres()
 
     if centres_by_date:
-        message = "¡Qué guay 😎! Parece que hay citas disponibles. Aquí tienes la lista por fechas:\n\n"
+        message = "¡Estupendo 😊! Aquí tienes las primeras fechas disponibles en el sistema de autocita:\n\n"
         for date in sorted(centres_by_date.keys()):
             date_str = date.strftime("%d/%m/%Y")
             centres = "\n".join(map(lambda x: f"- {x}", centres_by_date[date]))
-            message += f"{date_str}:\n{centres}\n\n"
+            message += f"*{date_str}*:\n{centres}\n\n"
 
         updated_ago = int((datetime.now() - last_update).seconds / 60)
         updated_at_msg = f"Actualizado hace {updated_ago} minutos"
@@ -211,7 +193,37 @@ def handle_min_date(update):
     return message
 
 
-def get_body(id_centre, id_prestacion, agendas, month_modified=0):
+def update_centres():
+    centres_by_date = defaultdict(lambda: list())
+    centres = requests.post("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerCentros",
+                            json={"edad_paciente": 45}, verify=False).json()
+
+    for centre in centres:
+        data_curr_month = requests.post(
+            "https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerHuecosMes",
+            json=get_spots_body(centre["idCentro"], centre["idPrestacion"], centre["agendas"]),
+            verify=False).json()
+        data_next_month = requests.post(
+            "https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerHuecosMes",
+            json=get_spots_body(centre["idCentro"], centre["idPrestacion"], centre["agendas"],
+                                month_modified=1),
+            verify=False).json()
+
+        data = []
+        data.extend(data_curr_month if type(data_curr_month) == list else [])
+        data.extend(data_next_month if type(data_next_month) == list else [])
+        dates = [x.get("fecha") for x in data]
+        dates = [datetime.strptime(x, "%d-%m-%Y") for x in dates]
+        if dates:
+            centres_by_date[min(dates)].append(centre['descripcion'])
+
+    last_update = datetime.now()
+    db.save_min_date_info(centres_by_date, last_update)
+
+    return centres_by_date, last_update
+
+
+def get_spots_body(id_centre, id_prestacion, agendas, month_modified=0):
     today = datetime.now()
     check_date = datetime(year=today.year, month=today.month, day=1) + timedelta(days=31 * month_modified)
 
