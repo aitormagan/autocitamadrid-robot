@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 
 TABLE_NAME = os.environ.get("NOTIFICATIONS_TABLE")
+MIN_DATE_PARAMETER = os.environ.get("PARAM_MIN_DATE")
 CLIENT = boto3.client('dynamodb')
 CLIENT_SSM = boto3.client('ssm')
 
@@ -12,7 +13,6 @@ __NAME = "name"
 __AGE = "age"
 __NOTIFIED = "notified"
 
-__MIN_DATE_PARAMETER = os.environ.get("PARAM_MIN_DATE")
 __CENTRES_BY_DATE = "centres_by_date"
 __UPDATED_AT = "updated_at"
 __DATE_FORMAT = "%Y%m%d"
@@ -55,7 +55,7 @@ def __parse_item(item):
 
 def save_min_date_info(centres_by_date, update_time):
     centres_by_date = {k.strftime(__DATE_FORMAT): v for k, v in centres_by_date.items()}
-    CLIENT_SSM.put_parameter(Name=__MIN_DATE_PARAMETER, Value=json.dumps({
+    CLIENT_SSM.put_parameter(Name=MIN_DATE_PARAMETER, Value=json.dumps({
         "updated_at": int(update_time.timestamp()),
         "centres_by_date": centres_by_date
     }), Overwrite=True, Type="String")
@@ -63,7 +63,7 @@ def save_min_date_info(centres_by_date, update_time):
 
 def get_min_date_info():
     try:
-        param_info = CLIENT_SSM.get_parameter(Name=__MIN_DATE_PARAMETER)
+        param_info = CLIENT_SSM.get_parameter(Name=MIN_DATE_PARAMETER)
         decoded_content = json.loads(param_info["Parameter"]["Value"])
         centres_by_date = decoded_content[__CENTRES_BY_DATE]
         centres_by_date = {datetime.strptime(k, __DATE_FORMAT): v for k, v in centres_by_date.items()}

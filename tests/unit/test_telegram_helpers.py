@@ -47,7 +47,7 @@ def test_given_403_when_send_text_then_no_raise(requests_mock):
     result = telegram_helpers.send_text(chat_id, message)
 
     requests_mock.get.assert_called_once_with(f'https://api.telegram.org/bot123/sendMessage?chat_id='
-                                              f'{chat_id}&parse_mode=MarkdownV2&text={message}', timeout=5)
+                                              f'{chat_id}&parse_mode=Markdown&text={message}', timeout=5)
 
     assert result == requests_mock.get.return_value.json.return_value
     requests_mock.get.return_value.raise_for_status.assert_not_called()

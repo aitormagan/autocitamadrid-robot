@@ -1,8 +1,14 @@
 from unittest.mock import patch, MagicMock
+from datetime import datetime
+import json
 from src import db
 
 
 TABLE_NAME = "test-table"
+
+
+class ParameterNotFound(BaseException):
+    pass
 
 
 @patch("src.db.CLIENT")
@@ -94,4 +100,59 @@ def test_when_get_non_notified_then_only_non_notified_people_returned(client_moc
     client_mock.get_paginator.return_value.paginate.return_value.build_full_result.assert_called_once_with()
 
 
+@patch("src.db.CLIENT_SSM")
+@patch("src.db.MIN_DATE_PARAMETER", "param_name")
+def test_given_centres_and_last_update_when_save_min_date_info_then_info_stored_in_ssm(ssm_mock):
+    centres_by_date = {
+        datetime(2021, 3, 6): ["hosp1", "hosp2"],
+        datetime(2021, 5, 9): ["hosp3", "hosp4"]
+    }
+    last_update = datetime.now()
 
+    db.save_min_date_info(centres_by_date, last_update)
+
+    ssm_mock.put_parameter.assert_called_once_with(Name=db.MIN_DATE_PARAMETER, Value=json.dumps({
+        "updated_at": int(last_update.timestamp()),
+        "centres_by_date": {
+            "20210306": ["hosp1", "hosp2"],
+            "20210509": ["hosp3", "hosp4"]
+        }
+    }), Overwrite=True, Type="String")
+
+
+@patch("src.db.CLIENT_SSM")
+@patch("src.db.MIN_DATE_PARAMETER", "param_name")
+def test_given_no_parameter_when_save_min_date_info_then_empty_dict_and_none_returned(ssm_mock):
+    ssm_mock.exceptions.ParameterNotFound = ParameterNotFound
+    ssm_mock.get_parameter.side_effect = ParameterNotFound("error")
+
+    centres_by_date, last_update = db.get_min_date_info()
+
+    assert centres_by_date == {}
+    assert last_update is None
+
+
+@patch("src.db.CLIENT_SSM")
+@patch("src.db.MIN_DATE_PARAMETER", "param_name")
+def test_given_parameter_when_save_min_date_info_then_info_stored_in_ssm(ssm_mock):
+    ssm_mock.exceptions.ParameterNotFound = ParameterNotFound
+    last_update = datetime.now()
+    ssm_mock.get_parameter.return_value = {
+        "Parameter": {
+            "Value": json.dumps({
+                "updated_at": int(last_update.timestamp()),
+                "centres_by_date": {
+                    "20210306": ["hosp1", "hosp2"],
+                    "20210509": ["hosp3", "hosp4"]
+                }
+            })
+        }
+    }
+
+    centres_by_date, received_last_update = db.get_min_date_info()
+
+    assert centres_by_date == {
+        datetime(2021, 3, 6): ["hosp1", "hosp2"],
+        datetime(2021, 5, 9): ["hosp3", "hosp4"]
+    }
+    assert received_last_update == datetime.fromtimestamp(int(last_update.timestamp()))
