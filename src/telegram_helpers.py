@@ -10,3 +10,5 @@ def send_text(chat_id, message):
     if response.status_code not in [200, 400, 403]:
         response.raise_for_status()
     return response.json()
+
+

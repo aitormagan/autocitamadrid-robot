@@ -1,4 +1,5 @@
-from unittest.mock import patch, MagicMock, ANY
+from unittest.mock import patch, MagicMock, ANY, call
+from datetime import datetime
 import pytest
 from freezegun import freeze_time
 from src import message_handler
@@ -277,6 +278,8 @@ def test_when_handle_start_then_ask_for_age():
     assert "/status" in answer
     assert "/currentage" in answer
 
+
+@patch("src.message_handler.handle_min_date")
 @patch("src.message_handler.telegram_helpers")
 @patch("src.message_handler.handle_start")
 @patch("src.message_handler.handle_cancel")
@@ -287,7 +290,7 @@ def test_when_handle_start_then_ask_for_age():
 def test_given_start_when_handle_update_then_handle_start_called(handle_generic_message_mock, handle_subscribe_mock,
                                                                  handle_current_age_mock, handle_status_mock,
                                                                  handle_cancel_mock, handle_start_mock,
-                                                                 telegram_helpers_mock):
+                                                                 telegram_helpers_mock, handle_min_date_mock):
     user_id = MagicMock()
     message_handler.handle_update({
         "message": {
@@ -302,6 +305,7 @@ def test_given_start_when_handle_update_then_handle_start_called(handle_generic_
     telegram_helpers_mock.send_text.assert_called_once_with(user_id, handle_start_mock.return_value)
 
 
+@patch("src.message_handler.handle_min_date")
 @patch("src.message_handler.telegram_helpers")
 @patch("src.message_handler.handle_start")
 @patch("src.message_handler.handle_cancel")
@@ -312,7 +316,7 @@ def test_given_start_when_handle_update_then_handle_start_called(handle_generic_
 def test_given_help_when_handle_update_then_handle_start_called(handle_generic_message_mock, handle_subscribe_mock,
                                                                 handle_current_age_mock, handle_status_mock,
                                                                 handle_cancel_mock, handle_start_mock,
-                                                                telegram_helpers_mock):
+                                                                telegram_helpers_mock, handle_min_date_mock):
     user_id = MagicMock()
     message_handler.handle_update({
         "message": {
@@ -327,6 +331,7 @@ def test_given_help_when_handle_update_then_handle_start_called(handle_generic_m
     telegram_helpers_mock.send_text.assert_called_once_with(user_id, handle_start_mock.return_value)
 
 
+@patch("src.message_handler.handle_min_date")
 @patch("src.message_handler.telegram_helpers")
 @patch("src.message_handler.handle_start")
 @patch("src.message_handler.handle_cancel")
@@ -337,7 +342,7 @@ def test_given_help_when_handle_update_then_handle_start_called(handle_generic_m
 def test_given_cancel_when_handle_update_then_handle_cancel_called(handle_generic_message_mock, handle_subscribe_mock,
                                                                    handle_current_age_mock, handle_status_mock,
                                                                    handle_cancel_mock, handle_start_mock,
-                                                                   telegram_helpers_mock):
+                                                                   telegram_helpers_mock, handle_min_date_mock):
     user_id = MagicMock()
     message_handler.handle_update({
         "message": {
@@ -352,6 +357,7 @@ def test_given_cancel_when_handle_update_then_handle_cancel_called(handle_generi
     telegram_helpers_mock.send_text.assert_called_once_with(user_id, handle_cancel_mock.return_value)
 
 
+@patch("src.message_handler.handle_min_date")
 @patch("src.message_handler.telegram_helpers")
 @patch("src.message_handler.handle_start")
 @patch("src.message_handler.handle_cancel")
@@ -362,7 +368,7 @@ def test_given_cancel_when_handle_update_then_handle_cancel_called(handle_generi
 def test_given_status_when_handle_update_then_handle_status_called(handle_generic_message_mock, handle_subscribe_mock,
                                                                    handle_current_age_mock, handle_status_mock,
                                                                    handle_cancel_mock, handle_start_mock,
-                                                                   telegram_helpers_mock):
+                                                                   telegram_helpers_mock, handle_min_date_mock):
     user_id = MagicMock()
     message_handler.handle_update({
         "message": {
@@ -377,6 +383,7 @@ def test_given_status_when_handle_update_then_handle_status_called(handle_generi
     telegram_helpers_mock.send_text.assert_called_once_with(user_id, handle_status_mock.return_value)
 
 
+@patch("src.message_handler.handle_min_date")
 @patch("src.message_handler.telegram_helpers")
 @patch("src.message_handler.handle_start")
 @patch("src.message_handler.handle_cancel")
@@ -387,7 +394,8 @@ def test_given_status_when_handle_update_then_handle_status_called(handle_generi
 def test_given_currentage_when_handle_update_then_handle_current_age_called(handle_generic_message_mock, handle_subscribe_mock,
                                                                             handle_current_age_mock, handle_status_mock,
                                                                             handle_cancel_mock, handle_start_mock,
-                                                                            telegram_helpers_mock):
+                                                                            telegram_helpers_mock,
+                                                                            handle_min_date_mock):
     user_id = MagicMock()
     message_handler.handle_update({
         "message": {
@@ -402,6 +410,7 @@ def test_given_currentage_when_handle_update_then_handle_current_age_called(hand
     telegram_helpers_mock.send_text.assert_called_once_with(user_id, handle_current_age_mock.return_value)
 
 
+@patch("src.message_handler.handle_min_date")
 @patch("src.message_handler.telegram_helpers")
 @patch("src.message_handler.handle_start")
 @patch("src.message_handler.handle_cancel")
@@ -412,7 +421,7 @@ def test_given_currentage_when_handle_update_then_handle_current_age_called(hand
 def test_given_subscribe_when_handle_update_then_handle_subscribe_called(handle_generic_message_mock, handle_subscribe_mock,
                                                                          handle_current_age_mock, handle_status_mock,
                                                                          handle_cancel_mock, handle_start_mock,
-                                                                         telegram_helpers_mock):
+                                                                         telegram_helpers_mock, handle_min_date_mock):
     user_id = MagicMock()
     message_handler.handle_update({
         "message": {
@@ -427,6 +436,33 @@ def test_given_subscribe_when_handle_update_then_handle_subscribe_called(handle_
     telegram_helpers_mock.send_text.assert_called_once_with(user_id, handle_subscribe_mock.return_value)
 
 
+@patch("src.message_handler.handle_min_date")
+@patch("src.message_handler.telegram_helpers")
+@patch("src.message_handler.handle_start")
+@patch("src.message_handler.handle_cancel")
+@patch("src.message_handler.handle_status")
+@patch("src.message_handler.handle_current_age")
+@patch("src.message_handler.handle_subscribe")
+@patch("src.message_handler.handle_generic_message")
+def test_given_min_date_when_handle_update_then_handle_min_date_called(handle_generic_message_mock, handle_subscribe_mock,
+                                                                         handle_current_age_mock, handle_status_mock,
+                                                                         handle_cancel_mock, handle_start_mock,
+                                                                         telegram_helpers_mock, handle_min_date_mock):
+    user_id = MagicMock()
+    message_handler.handle_update({
+        "message": {
+            "text": "/mindate",
+            "from": {
+                "id": user_id,
+                "first_name": MagicMock()
+            }
+        }
+    })
+
+    telegram_helpers_mock.send_text.assert_any_call(user_id, handle_min_date_mock.return_value)
+
+
+@patch("src.message_handler.handle_min_date")
 @patch("src.message_handler.telegram_helpers")
 @patch("src.message_handler.handle_start")
 @patch("src.message_handler.handle_cancel")
@@ -440,7 +476,8 @@ def test_given_random_text_when_handle_update_then_handle_generic_text_called(ha
                                                                               handle_status_mock,
                                                                               handle_cancel_mock,
                                                                               handle_start_mock,
-                                                                              telegram_helpers_mock):
+                                                                              telegram_helpers_mock,
+                                                                              handle_min_date_mock):
     user_id = MagicMock()
     message_handler.handle_update({
         "message": {
@@ -455,6 +492,7 @@ def test_given_random_text_when_handle_update_then_handle_generic_text_called(ha
     telegram_helpers_mock.send_text.assert_called_once_with(user_id, handle_generic_message_mock.return_value)
 
 
+@patch("src.message_handler.handle_min_date")
 @patch("src.message_handler.telegram_helpers")
 @patch("src.message_handler.handle_start")
 @patch("src.message_handler.handle_cancel")
@@ -468,7 +506,8 @@ def test_given_exception_when_handle_update_then_sorry_message(handle_generic_me
                                                                handle_status_mock,
                                                                handle_cancel_mock,
                                                                handle_start_mock,
-                                                               telegram_helpers_mock):
+                                                               telegram_helpers_mock,
+                                                               handle_min_date_mock):
 
     handle_generic_message_mock.side_effect = Exception()
     user_id = MagicMock()
@@ -527,3 +566,225 @@ def test_given_user_kicked_bot_when_handle_update_then_notification_cancelled(db
     message_handler.handle_update(message)
 
     db_mock.delete_notification.assert_called_once_with(user_id)
+
+
+@freeze_time("2021-06-22 18:20:00")
+@patch("src.message_handler.update_centres")
+@patch("src.message_handler.db")
+@patch("src.message_handler.UPDATE_CENTRES_TIME", 1200)
+def test_given_info_not_updated_when_handle_min_date_then_update_centres_called(db_mock, update_centres_mock):
+    centres = {
+        datetime(2021, 3, 6): ["hosp1", "hosp2"],
+        datetime(2021, 5, 9): ["hosp3", "hosp4"]
+    }
+    db_mock.get_min_date_info.return_value = ({}, datetime(2021, 6, 22, 17, 59, 00))
+    update_centres_mock.return_value = (centres, datetime(2021, 6, 22, 18, 20, 00))
+
+    answer = message_handler.handle_min_date(None)
+
+    update_centres_mock.assert_called_once_with()
+    db_mock.get_min_date_info.assert_called_once_with()
+
+    assert "*06/03/2021*:\n- hosp1\n- hosp2" in answer
+    assert "*09/05/2021*:\n- hosp3\n- hosp4" in answer
+
+
+@freeze_time("2021-06-22 18:20:00")
+@patch("src.message_handler.update_centres")
+@patch("src.message_handler.db")
+@patch("src.message_handler.UPDATE_CENTRES_TIME", 1200)
+def test_given_info_updated_when_handle_min_date_then_update_centres_not_called(db_mock, update_centres_mock):
+    centres = {
+        datetime(2021, 3, 6): ["hosp1", "hosp2"],
+        datetime(2021, 5, 9): ["hosp3", "hosp4"]
+    }
+    db_mock.get_min_date_info.return_value = (centres, datetime(2021, 6, 22, 18, 00, 1))
+
+    answer = message_handler.handle_min_date(None)
+
+    update_centres_mock.assert_not_called()
+
+    assert "*06/03/2021*:\n- hosp1\n- hosp2" in answer
+    assert "*09/05/2021*:\n- hosp3\n- hosp4" in answer
+
+
+@freeze_time("2021-06-22")
+def test_given_1_month_modifier_when_get_spots_body_then_next_month_returned_in_mes():
+    id_centre = "123"
+    id_prestacion = "456"
+    agendas = MagicMock()
+    month_modifier = 1
+
+    assert message_handler.get_spots_body(id_centre, id_prestacion, agendas, month_modifier) == {
+        "idPaciente": "1",
+        "idPrestacion": id_prestacion,
+        "agendas": agendas,
+        "idCentro": id_centre,
+        "mes": 7,
+        "anyo": 2021,
+        "horaInicio": "08:00",
+        "horaFin": "22:00"
+    }
+
+
+@freeze_time("2021-06-22 10:01:02")
+@patch("src.message_handler.requests")
+@patch("src.message_handler.get_spots_body")
+@patch("src.message_handler.db")
+def test_given_two_centres_same_date_when_update_centres_then_info_grouped(db_mock, get_spots_body_mock,
+                                                                           requests_mock):
+    hosp1_id = 1
+    hosp1_desc = "hosp1"
+    hosp1_agendas = MagicMock()
+    hosp1_prestacion = "123"
+
+    hosp2_id = 2
+    hosp2_desc = "hosp2"
+    hosp2_agendas = MagicMock()
+    hosp2_prestacion = "456"
+
+    centres_response = [
+        {
+            "idCentro": hosp1_id,
+            "descripcion": hosp1_desc,
+            "agendas": hosp1_agendas,
+            "idPrestacion": hosp1_prestacion
+        }, {
+            "idCentro": hosp2_id,
+            "descripcion": hosp2_desc,
+            "agendas": hosp2_agendas,
+            "idPrestacion": hosp2_prestacion
+        }
+    ]
+
+    hosp1_spots = [
+        {
+            "fecha": "29-06-2021"
+        },
+        {
+            "fecha": "28-06-2021"
+        }
+    ]
+
+    hosp2_spots = [
+        {
+            "fecha": "28-06-2021"
+        },
+        {
+            "fecha": "30-06-2021"
+        }
+    ]
+
+    requests_mock.post.return_value.json.side_effect = [
+        centres_response,
+        hosp1_spots,
+        hosp1_spots,
+        hosp2_spots,
+        hosp2_spots
+    ]
+
+    centres, last_update = message_handler.update_centres()
+
+    assert dict(centres) == {
+        datetime(2021, 6, 28): ["hosp1", "hosp2"]
+    }
+
+    get_spots_body_mock.assert_has_calls([
+        call(hosp1_id, hosp1_prestacion, hosp1_agendas),
+        call(hosp1_id, hosp1_prestacion, hosp1_agendas, month_modifier=1),
+        call(hosp2_id, hosp2_prestacion, hosp2_agendas),
+        call(hosp2_id, hosp2_prestacion, hosp2_agendas, month_modifier=1),
+    ])
+
+    db_mock.save_min_date_info.assert_called_once_with(centres, last_update)
+
+
+@freeze_time("2021-06-22 10:01:02")
+@patch("src.message_handler.requests")
+@patch("src.message_handler.get_spots_body")
+@patch("src.message_handler.db")
+def test_given_two_centres_diff_date_when_update_centres_then_info_separated(db_mock, get_spots_body_mock,
+                                                                             requests_mock):
+    hosp1_id = 1
+    hosp1_desc = "hosp1"
+    hosp1_agendas = MagicMock()
+    hosp1_prestacion = "123"
+
+    hosp2_id = 2
+    hosp2_desc = "hosp2"
+    hosp2_agendas = MagicMock()
+    hosp2_prestacion = "456"
+
+    centres_response = [
+        {
+            "idCentro": hosp1_id,
+            "descripcion": hosp1_desc,
+            "agendas": hosp1_agendas,
+            "idPrestacion": hosp1_prestacion
+        }, {
+            "idCentro": hosp2_id,
+            "descripcion": hosp2_desc,
+            "agendas": hosp2_agendas,
+            "idPrestacion": hosp2_prestacion
+        }
+    ]
+
+    hosp1_spots = [
+        {
+            "fecha": "29-06-2021"
+        },
+        {
+            "fecha": "28-06-2021"
+        }
+    ]
+
+    hosp2_spots = [
+        {
+            "fecha": "28-06-2021"
+        },
+        {
+            "fecha": "23-06-2021"
+        }
+    ]
+
+    requests_mock.post.return_value.json.side_effect = [
+        centres_response,
+        hosp1_spots,
+        hosp1_spots,
+        hosp2_spots,
+        hosp2_spots
+    ]
+
+    centres, last_update = message_handler.update_centres()
+
+    assert dict(centres) == {
+        datetime(2021, 6, 23): ["hosp2"],
+        datetime(2021, 6, 28): ["hosp1"]
+    }
+
+    get_spots_body_mock.assert_has_calls([
+        call(hosp1_id, hosp1_prestacion, hosp1_agendas),
+        call(hosp1_id, hosp1_prestacion, hosp1_agendas, month_modifier=1),
+        call(hosp2_id, hosp2_prestacion, hosp2_agendas),
+        call(hosp2_id, hosp2_prestacion, hosp2_agendas, month_modifier=1),
+    ])
+
+    db_mock.save_min_date_info.assert_called_once_with(centres, last_update)
+
+@freeze_time("2021-06-22")
+def test_given_0_month_modifier_when_get_spots_body_then_current_month_returned_in_mes():
+    id_centre = "123"
+    id_prestacion = "456"
+    agendas = MagicMock()
+    month_modifier = 0
+
+    assert message_handler.get_spots_body(id_centre, id_prestacion, agendas, month_modifier) == {
+        "idPaciente": "1",
+        "idPrestacion": id_prestacion,
+        "agendas": agendas,
+        "idCentro": id_centre,
+        "mes": 6,
+        "anyo": 2021,
+        "horaInicio": "08:00",
+        "horaFin": "22:00"
+    }
