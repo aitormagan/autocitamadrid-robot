@@ -60,7 +60,7 @@ def handle_start(update):
            f"cuando puedas pedir cita para vacunarte\n- /help: 🙋 Muestra esta ayuda\n- /status: " \
            f"ℹ️ Muestra si ya estás suscrito\n- /cancel: 🔕 Cancela la notificación registrada\n - /currentage: " \
            f"📆 Muestra la edad mínima con la que puedes pedir cita\n - /mindate: 📆 Muestra una lista de las primeras " \
-           f"citas disponibles en los distintos hospitales."
+           f"citas disponibles en los distintos centros de vacunación."
 
 
 def handle_cancel(update):
@@ -173,7 +173,7 @@ def handle_min_date(_):
 
     centres_by_date, last_update = db.get_min_date_info()
 
-    if last_update is None or (datetime.now() - last_update).seconds >= 1200:
+    if last_update is None or (datetime.now() - last_update).seconds >= UPDATE_CENTRES_TIME:
         centres_by_date, last_update = update_centres()
 
     if centres_by_date:
@@ -206,7 +206,7 @@ def update_centres():
         data_next_month = requests.post(
             "https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerHuecosMes",
             json=get_spots_body(centre["idCentro"], centre["idPrestacion"], centre["agendas"],
-                                month_modified=1),
+                                month_modifier=1),
             verify=False).json()
 
         data = []
@@ -223,9 +223,9 @@ def update_centres():
     return centres_by_date, last_update
 
 
-def get_spots_body(id_centre, id_prestacion, agendas, month_modified=0):
+def get_spots_body(id_centre, id_prestacion, agendas, month_modifier=0):
     today = datetime.now()
-    check_date = datetime(year=today.year, month=today.month, day=1) + timedelta(days=31 * month_modified)
+    check_date = datetime(year=today.year, month=today.month, day=1) + timedelta(days=31 * month_modifier)
 
     return {
         "idPaciente": "1",
