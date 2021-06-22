@@ -59,8 +59,8 @@ def handle_start(update):
            f"tienes o tu año de nacimiento!\n\nOtros comandos útiles:\n-/subscribe: 🔔 Crea una suscripción para " \
            f"cuando puedas pedir cita para vacunarte\n- /help: 🙋 Muestra esta ayuda\n- /status: " \
            f"ℹ️ Muestra si ya estás suscrito\n- /cancel: 🔕 Cancela la notificación registrada\n - /currentage: " \
-           f"📆 Muestra la edad mínima con la que puedes pedir cita\n - /mindate: 📆 Muestra una lista de las primeras " \
-           f"citas disponibles en los distintos centros de vacunación."
+           f"📆 Muestra la edad mínima con la que puedes pedir cita\n - /mindate: 📆 Lista las primeras citas " \
+           f"disponibles en los distintos centros de vacunación."
 
 
 def handle_cancel(update):
