@@ -202,6 +202,7 @@ def test_given_subscribed_notified_when_handle_status_then_already_notified(db_m
     db_mock.get_user_notification.assert_called_once_with(user_id)
 
 
+@freeze_time("2021-06-23")
 @patch("src.message_handler.db")
 @patch("src.message_handler.get_min_years", return_value=45)
 def test_given_not_subscribed_when_handle_current_age_then_you_can_subscribe(get_min_years_mock, db_mock):
@@ -218,11 +219,13 @@ def test_given_not_subscribed_when_handle_current_age_then_you_can_subscribe(get
         }
     })
 
-    assert "pedir cita a personas con 45 años o más️" in result
+    assert "pedir cita a personas con 45 años o más" in result
+    assert "nacidos en 1976 o antes"
     assert "Puedo notificarte" in result
     db_mock.get_user_notification.assert_called_once_with(user_id)
 
 
+@freeze_time("2021-06-23")
 @patch("src.message_handler.db")
 @patch("src.message_handler.get_min_years", return_value=45)
 def test_given_subscribed_when_handle_current_age_then_message_with_age(get_min_years_mock, db_mock):
@@ -239,7 +242,8 @@ def test_given_subscribed_when_handle_current_age_then_message_with_age(get_min_
         }
     })
 
-    assert "pedir cita a personas con 45 años o más️" in result
+    assert "pedir cita a personas con 45 años o más" in result
+    assert "nacidos en 1976 o antes"
     assert "Puedo notificarte" not in result
     db_mock.get_user_notification.assert_called_once_with(user_id)
 
@@ -256,7 +260,7 @@ def test_when_handle_subscribe_then_ask_for_age():
     })
 
     assert name in answer
-    assert "edad o tu año de nacimiento" in answer
+    assert "tu año de nacimiento" in answer
 
 
 def test_when_handle_start_then_ask_for_age():
