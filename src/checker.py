@@ -8,9 +8,10 @@ logger = Logger(service="vacunacovidmadridbot")
 
 
 def notify(min_years, user_info):
+    max_year_of_birth = datetime.now().year - min_years
     message = f"‼️ ¡Buenas noticias {user_info['name']}! El sistema de vacunación de la Comunidad de Madrid ya " \
-              f"permite pedir cita a gente con {min_years} años o más. ¡🏃 Corre y pide tu cita en 🔗 " \
-              f"https://autocitavacuna.sanidadmadrid.org/ohcitacovid/!\n\n⁉️ ¿Sabes que ahora puedo darte las " \
+              f"permite pedir cita a gente nacida en {max_year_of_birth} o antes. 🏃 Corre y pide tu cita en 🔗 " \
+              f"https://autocitavacuna.sanidadmadrid.org/ohcitacovid/\n\n🤔 ¿Sabes que ahora puedo darte las " \
               f"primeras citas disponibles? Simplemente di /mindate."
     send_text(user_info["user_id"], message)
 
