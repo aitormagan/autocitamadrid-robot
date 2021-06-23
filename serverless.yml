@@ -64,6 +64,7 @@ provider:
 functions:
   message_handler:
     handler: main.handle_telegram_message
+    timeout: 30
     events:
       - http:
           path: /
