@@ -54,8 +54,8 @@ def handle_update(update):
 def handle_start(update):
     user_info = update.get("message", {}).get("from", {})
     name = user_info.get("first_name", "")
-    return f"¡Hola {name}! Bienvenido al sistema de notificación de vacunación. Si quieres que te avise 🔔 cuando " \
-           f"puedas pedir cita para vacunarte 💉 en la Comunidad de Madrid, simplemente indicame " \
+    return f"¡Hola {name}! Bienvenido al sistema de notificación de vacunación.\n\n👉 ¡Si quieres que te avise 🔔 " \
+           f"cuando puedas pedir cita para vacunarte 💉 en la Comunidad de Madrid, simplemente indicame " \
            f"tu año de nacimiento!\n\nOtros comandos útiles:\n-/subscribe: 🔔 Crea una suscripción para " \
            f"cuando puedas pedir cita para vacunarte\n- /help: 🙋 Muestra esta ayuda\n- /status: " \
            f"ℹ️ Muestra si ya estás suscrito\n- /cancel: 🔕 Cancela la notificación registrada\n - /currentage: " \
