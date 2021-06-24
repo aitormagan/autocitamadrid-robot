@@ -54,7 +54,7 @@ def handle_update(update):
 def handle_start(update):
     user_info = update.get("message", {}).get("from", {})
     name = user_info.get("first_name", "")
-    return f"¡Hola {name}! Bienvenido al sistema de notificación de vacunación.\n\n👉 ¡Si quieres que te avise 🔔 " \
+    return f"¡Hola {name}! Bienvenidx al sistema de notificación de vacunación.\n\n👉 ¡Si quieres que te avise 🔔 " \
            f"cuando puedas pedir cita para vacunarte 💉 en la Comunidad de Madrid, simplemente indicame " \
            f"tu año de nacimiento!\n\nOtros comandos útiles:\n-/subscribe: 🔔 Crea una suscripción para " \
            f"cuando puedas pedir cita para vacunarte\n- /help: 🙋 Muestra esta ayuda\n- /status: " \
@@ -130,8 +130,8 @@ def handle_generic_message(update):
         min_years = get_min_years()
 
         if age >= min_years:
-            message = "‼️ ¡Ey! Parece que el sistema ya te permite pedir cita. ¡Hazlo ya en 🔗 " \
-                      "https://autocitavacuna.sanidadmadrid.org/ohcitacovid/!"
+            message = "‼️ ¡Ey! Parece que el sistema ya te permite pedir cita. Hazlo ya en 🔗 " \
+                      "https://autocitavacuna.sanidadmadrid.org/ohcitacovid/"
         else:
             user_notification = db.get_user_notification(user_id)
             db.save_notification(user_id, user_name, age)
@@ -219,7 +219,7 @@ def update_centres():
         dates = [x.get("fecha") for x in data]
         dates = [datetime.strptime(x, "%d-%m-%Y") for x in dates]
         if dates:
-            centres_by_date[min(dates)].append(centre['descripcion'])
+            centres_by_date[min(dates)].append(centre['descripcion'].replace("_", "-"))
 
     last_update = datetime.now()
     db.save_min_date_info(centres_by_date, last_update)
