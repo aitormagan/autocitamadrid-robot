@@ -219,8 +219,7 @@ def test_given_not_subscribed_when_handle_current_age_then_you_can_subscribe(get
         }
     })
 
-    assert "pedir cita a personas con 45 años o más" in result
-    assert "nacidos en 1976 o antes"
+    assert "pedir cita a personas a personas nacidas en 1976 o antes"
     assert "Puedo notificarte" in result
     db_mock.get_user_notification.assert_called_once_with(user_id)
 
@@ -242,8 +241,7 @@ def test_given_subscribed_when_handle_current_age_then_message_with_age(get_min_
         }
     })
 
-    assert "pedir cita a personas con 45 años o más" in result
-    assert "nacidos en 1976 o antes"
+    assert "pedir cita a personas a personas nacidas en 1976 o antes"
     assert "Puedo notificarte" not in result
     db_mock.get_user_notification.assert_called_once_with(user_id)
 
