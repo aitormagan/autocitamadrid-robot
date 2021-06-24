@@ -105,7 +105,7 @@ def handle_current_age(update):
     user_notification = db.get_user_notification(user_id)
     if not user_notification:
         message += "\n\n⚠️ Puedo notificarte 🔔 cuando el sistema de autocitación permita vacunar a gente con tu " \
-                   "edad. Simplemente dime tu edad o tu año de nacimiento."
+                   "edad. Simplemente dime tu año de nacimiento."
 
     return message
 
