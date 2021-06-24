@@ -238,6 +238,6 @@ def get_spots_body(id_centre, id_prestacion, agendas, month_modifier=0):
         "idCentro": id_centre,
         "mes": check_date.month,
         "anyo": check_date.year,
-        "horaInicio": "08:00",
-        "horaFin": "22:00"
+        "horaInicio": "00:00",
+        "horaFin": "23:59"
     }
