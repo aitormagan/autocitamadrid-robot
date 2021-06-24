@@ -615,25 +615,6 @@ def test_given_info_updated_when_handle_min_date_then_update_centres_not_called(
     assert "Actualizado hace 19 minutos" in answer
 
 
-@freeze_time("2021-06-22")
-def test_given_1_month_modifier_when_get_spots_body_then_next_month_returned_in_mes():
-    id_centre = "123"
-    id_prestacion = "456"
-    agendas = MagicMock()
-    month_modifier = 1
-
-    assert message_handler.get_spots_body(id_centre, id_prestacion, agendas, month_modifier) == {
-        "idPaciente": "1",
-        "idPrestacion": id_prestacion,
-        "agendas": agendas,
-        "idCentro": id_centre,
-        "mes": 7,
-        "anyo": 2021,
-        "horaInicio": "08:00",
-        "horaFin": "22:00"
-    }
-
-
 @freeze_time("2021-06-22 10:01:02")
 @patch("src.message_handler.requests")
 @patch("src.message_handler.get_spots_body")
@@ -778,6 +759,26 @@ def test_given_two_centres_diff_date_when_update_centres_then_info_separated(db_
 
     db_mock.save_min_date_info.assert_called_once_with(centres, last_update)
 
+
+@freeze_time("2021-06-22")
+def test_given_1_month_modifier_when_get_spots_body_then_next_month_returned_in_mes():
+    id_centre = "123"
+    id_prestacion = "456"
+    agendas = MagicMock()
+    month_modifier = 1
+
+    assert message_handler.get_spots_body(id_centre, id_prestacion, agendas, month_modifier) == {
+        "idPaciente": "1",
+        "idPrestacion": id_prestacion,
+        "agendas": agendas,
+        "idCentro": id_centre,
+        "mes": 7,
+        "anyo": 2021,
+        "horaInicio": "00:00",
+        "horaFin": "23:59"
+    }
+
+
 @freeze_time("2021-06-22")
 def test_given_0_month_modifier_when_get_spots_body_then_current_month_returned_in_mes():
     id_centre = "123"
@@ -792,6 +793,6 @@ def test_given_0_month_modifier_when_get_spots_body_then_current_month_returned_
         "idCentro": id_centre,
         "mes": 6,
         "anyo": 2021,
-        "horaInicio": "08:00",
-        "horaFin": "22:00"
+        "horaInicio": "00:00",
+        "horaFin": "23:59"
     }
