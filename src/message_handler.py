@@ -98,8 +98,8 @@ def handle_current_age(update):
     user_id = user_info.get("id")
     min_years = get_min_years()
     max_year_of_birth = datetime.now().year - min_years
-    message = f"El sistema de autocita permite pedir cita a personas con {min_years} años o más " \
-              f"(nacidos en {max_year_of_birth} o antes). Si cumples con la edad, puedes ir a " \
+    message = f"El sistema de autocita permite pedir cita a personas nacidas en {max_year_of_birth} o antes. " \
+              f"Si cumples con la edad, puedes ir a " \
               f"🔗 https://autocitavacuna.sanidadmadrid.org/ohcitacovid para pedir tu cita"
 
     user_notification = db.get_user_notification(user_id)
