@@ -3,6 +3,7 @@ from freezegun import freeze_time
 from src import checker
 
 
+@freeze_time("2021-06-23")
 @patch("src.checker.send_text")
 def test_when_notify_then_notification_sent(send_text_mock):
     min_age = 31
@@ -14,7 +15,7 @@ def test_when_notify_then_notification_sent(send_text_mock):
     send_text_mock.assert_called_once_with(user_id, ANY)
     notification = send_text_mock.call_args[0][1]
     assert f"Buenas noticias {name}" in notification
-    assert f"permite pedir cita a gente con {min_age} años o más" in notification
+    assert f"permite pedir cita a gente nacida en 1990 o antes" in notification
 
 
 @patch("src.checker.save_notification")
