@@ -186,17 +186,19 @@ def handle_min_date(_):
             pass
 
     if centres_by_date:
-        updated_ago = int((datetime.now() - last_update).seconds / 60)
+        updated_ago_seconds = (datetime.now() - last_update).seconds
         message = "¡Estupendo 😊! Aquí tienes las primeras fechas disponibles en el sistema de autocita:" \
-            if updated_ago < UPDATE_CENTRES_TIME else "Perdona 😔, pero me está costando un poquito contactar con " \
-                                                      "el servicio de autocita de la Comunidad de Madrid. Aquí " \
-                                                      "tienes la última información que puede extraer:"
+            if updated_ago_seconds < UPDATE_CENTRES_TIME else "Perdona 😔, pero me está costando un poquito contactar " \
+                                                              "con el servicio de autocita de la Comunidad de " \
+                                                              "Madrid. Aquí tienes la última información que puede " \
+                                                              "extraer:"
         message += "\n\n"
         for date in sorted(centres_by_date.keys()):
             date_str = date.strftime("%d/%m/%Y")
             centres = "\n".join(map(lambda x: f"- {x}", centres_by_date[date]))
             message += f"*{date_str}*:\n{centres}\n\n"
 
+        updated_ago = int(round(updated_ago_seconds / 60))
         updated_at_msg = f"Actualizado hace {updated_ago} minutos"
         updated_at_msg = updated_at_msg[:-1] if updated_ago == 1 else updated_at_msg
         message += updated_at_msg

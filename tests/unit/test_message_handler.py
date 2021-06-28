@@ -610,7 +610,7 @@ def test_given_info_updated_when_handle_min_date_then_update_centres_not_called(
 
     assert "*06/03/2021*:\n- hosp1\n- hosp2" in answer
     assert "*09/05/2021*:\n- hosp3\n- hosp4" in answer
-    assert "Actualizado hace 19 minutos" in answer
+    assert "Actualizado hace 20 minutos" in answer
 
 
 @freeze_time("2021-06-22 10:01:02")
