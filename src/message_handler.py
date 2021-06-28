@@ -7,6 +7,8 @@ import requests
 from src import telegram_helpers
 from src import db
 from src.checker import get_min_years
+from func_timeout import func_set_timeout
+from func_timeout.exceptions import FunctionTimedOut
 
 
 UPDATE_CENTRES_TIME = int(os.environ.get("UPDATE_CENTRES_TIME", 300))
@@ -178,16 +180,25 @@ def handle_min_date(_):
     centres_by_date, last_update = db.get_min_date_info()
 
     if last_update is None or (datetime.now() - last_update).seconds >= UPDATE_CENTRES_TIME:
-        centres_by_date, last_update = update_centres()
+        try:
+            centres_by_date, last_update = update_centres()
+        except (FunctionTimedOut, requests.exceptions.RequestException):
+            pass
 
     if centres_by_date:
-        message = "¡Estupendo 😊! Aquí tienes las primeras fechas disponibles en el sistema de autocita:\n\n"
+        updated_ago_seconds = (datetime.now() - last_update).seconds
+        message = "¡Estupendo 😊! Aquí tienes las primeras fechas disponibles en el sistema de autocita:" \
+            if updated_ago_seconds < UPDATE_CENTRES_TIME else "Perdona 😔, pero me está costando un poquito contactar " \
+                                                              "con el servicio de autocita de la Comunidad de " \
+                                                              "Madrid. Aquí tienes la última información que puede " \
+                                                              "extraer:"
+        message += "\n\n"
         for date in sorted(centres_by_date.keys()):
             date_str = date.strftime("%d/%m/%Y")
             centres = "\n".join(map(lambda x: f"- {x}", centres_by_date[date]))
             message += f"*{date_str}*:\n{centres}\n\n"
 
-        updated_ago = int((datetime.now() - last_update).seconds / 60)
+        updated_ago = int(round(updated_ago_seconds / 60))
         updated_at_msg = f"Actualizado hace {updated_ago} minutos"
         updated_at_msg = updated_at_msg[:-1] if updated_ago == 1 else updated_at_msg
         message += updated_at_msg
@@ -197,6 +208,7 @@ def handle_min_date(_):
     return message
 
 
+@func_set_timeout(22)
 def update_centres():
     centres_by_date = defaultdict(lambda: list())
     centres = requests.post("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerCentros",

@@ -24,6 +24,9 @@ custom:
   min_date_param:
     dev: "/autocita/madrid/dev/min-date-info"
     pro: "/autocita/madrid/pro/min-date-info"
+  min_years_param:
+    dev: "/autocita/madrid/dev/min-years"
+    pro: "/autocita/madrid/pro/min-years"
   table:
     dev: "vaccine-notifications-dev"
     pro: "vaccine-notifications-pro"
@@ -60,6 +63,7 @@ provider:
     PARAM_MIN_DATE: ${self:custom.min_date_param.${opt:stage, self:provider.stage}}
     BOT_TOKEN: ${env:BOT_TOKEN}
     UPDATE_CENTRES_TIME: ${self:custom.update_centres_time.${opt:stage, self:provider.stage}}
+    PARAM_MIN_YEARS: ${self:custom.min_years_param.${opt:stage, self:provider.stage}}
 
 functions:
   message_handler:
