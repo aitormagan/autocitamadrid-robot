@@ -75,7 +75,13 @@ def get_min_date_info():
 
 
 def save_min_years(max_years):
-    CLIENT_SSM.put_parameter(Name=MIN_YEARS_PARAMETER, Value=str(max_years))
+    try:
+        current_years = get_min_years()
+    except ImpossibleToDetermineMaxAge:
+        current_years = None
+
+    if current_years != max_years:
+        CLIENT_SSM.put_parameter(Name=MIN_YEARS_PARAMETER, Value=str(max_years), Type="String")
 
 
 def get_min_years():

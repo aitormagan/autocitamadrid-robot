@@ -161,11 +161,24 @@ def test_given_parameter_when_save_min_date_info_then_info_stored_in_ssm(ssm_moc
 
 
 @patch("src.db.CLIENT_SSM")
+@patch("src.db.get_min_years")
 @patch("src.db.MIN_YEARS_PARAMETER", "param2_name")
-def test_when_save_min_years_then_ssm_called(client_ssm_mock):
+def test_given_param_not_updated_when_save_min_years_then_put_parameter_called(get_min_years_mock, client_ssm_mock):
     years = 20
+    get_min_years_mock.return_value = 21
     db.save_min_years(years)
-    client_ssm_mock.put_parameter.assert_called_once_with(Name=db.MIN_YEARS_PARAMETER, Value=str(years))
+    client_ssm_mock.put_parameter.assert_called_once_with(Name=db.MIN_YEARS_PARAMETER, Value=str(years),
+                                                          Type="String")
+
+
+@patch("src.db.CLIENT_SSM")
+@patch("src.db.get_min_years")
+@patch("src.db.MIN_YEARS_PARAMETER", "param2_name")
+def test_given_param_not_updated_when_save_min_years_then_put_parameter_not_called(get_min_years_mock, client_ssm_mock):
+    years = 21
+    get_min_years_mock.return_value = 21
+    db.save_min_years(years)
+    client_ssm_mock.put_parameter.assert_not_called()
 
 
 @patch("src.db.CLIENT_SSM")
@@ -186,7 +199,6 @@ def test_given_param_exists_when_get_min_years_then_converted_param_returned(cli
 @patch("src.db.CLIENT_SSM")
 @patch("src.db.MIN_YEARS_PARAMETER", "param2_name")
 def test_given_param_does_not_exists_when_get_min_years_then_custom_exception_raises(client_ssm_mock):
-    years = "20"
     client_ssm_mock.exceptions.ParameterNotFound = ParameterNotFound
     client_ssm_mock.get_parameter.side_effect = ParameterNotFound
 

@@ -56,7 +56,7 @@ def test_given_1990_as_year_when_get_min_years_aux_then_31_returned(save_min_yea
 @patch("src.checker.mark_as_notified")
 @patch("src.checker.notify")
 @patch("src.checker.get_non_notified_people")
-@patch("src.checker.get_min_years", return_value=45)
+@patch("src.checker._get_min_years", return_value=45)
 def test_when_main_then_only_people_above_min_age_notified(get_min_years_mock, get_non_notified_people_mock,
                                                            notify_mock, mark_as_notified_mock):
 

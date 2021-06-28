@@ -46,7 +46,7 @@ def _get_min_years():
 
 
 def main():
-    min_years = get_min_years()
+    min_years = _get_min_years()
     non_notified = get_non_notified_people()
 
     for person in non_notified:
