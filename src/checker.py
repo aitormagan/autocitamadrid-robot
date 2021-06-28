@@ -2,7 +2,9 @@ import requests
 from aws_lambda_powertools import Logger
 from datetime import datetime
 from src.telegram_helpers import send_text
-from src.db import save_notification, get_non_notified_people
+from src.db import save_notification, get_non_notified_people, get_min_years as db_get_min_years, save_min_years
+from func_timeout import func_set_timeout
+from func_timeout.exceptions import FunctionTimedOut
 
 logger = Logger(service="vacunacovidmadridbot")
 
@@ -21,12 +23,26 @@ def mark_as_notified(user_info):
 
 
 def get_min_years():
-    data = requests.get("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/assets/config/app-config.json",
-                        verify=False, timeout=5).json()
+    try:
+        years = _get_min_years()
+    except (FunctionTimedOut, requests.exceptions.RequestException):
+        years = db_get_min_years()
 
+    return years
+
+
+@func_set_timeout(15)
+def _get_min_years():
+    req = requests.get("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/assets/config/app-config.json",
+                       verify=False, timeout=5)
+
+    req.raise_for_status()
+    data = req.json()
     max_birthday = datetime.strptime(data["dFin_Birthday"], "%d/%m/%Y")
     curr_date = datetime.now()
-    return curr_date.year - max_birthday.year
+    max_years = curr_date.year - max_birthday.year
+    save_min_years(max_years)
+    return max_years
 
 
 def main():

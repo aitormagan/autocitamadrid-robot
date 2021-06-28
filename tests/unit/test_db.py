@@ -1,7 +1,9 @@
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 import json
+import pytest
 from src import db
+from src.exceptions import ImpossibleToDetermineMaxAge
 
 
 TABLE_NAME = "test-table"
@@ -156,3 +158,37 @@ def test_given_parameter_when_save_min_date_info_then_info_stored_in_ssm(ssm_moc
         datetime(2021, 5, 9): ["hosp3", "hosp4"]
     }
     assert received_last_update == datetime.fromtimestamp(int(last_update.timestamp()))
+
+
+@patch("src.db.CLIENT_SSM")
+@patch("src.db.MIN_YEARS_PARAMETER", "param2_name")
+def test_when_save_min_years_then_ssm_called(client_ssm_mock):
+    years = 20
+    db.save_min_years(years)
+    client_ssm_mock.put_parameter.assert_called_once_with(Name=db.MIN_YEARS_PARAMETER, Value=str(years))
+
+
+@patch("src.db.CLIENT_SSM")
+@patch("src.db.MIN_YEARS_PARAMETER", "param2_name")
+def test_given_param_exists_when_get_min_years_then_converted_param_returned(client_ssm_mock):
+    years = "20"
+    client_ssm_mock.exceptions.ParameterNotFound = ParameterNotFound
+    client_ssm_mock.get_parameter.return_value = {
+        "Parameter": {
+            "Value": years
+        }
+    }
+
+    assert db.get_min_years() == int(years)
+    client_ssm_mock.get_parameter.assert_called_once_with(Name=db.MIN_YEARS_PARAMETER)
+
+
+@patch("src.db.CLIENT_SSM")
+@patch("src.db.MIN_YEARS_PARAMETER", "param2_name")
+def test_given_param_does_not_exists_when_get_min_years_then_custom_exception_raises(client_ssm_mock):
+    years = "20"
+    client_ssm_mock.exceptions.ParameterNotFound = ParameterNotFound
+    client_ssm_mock.get_parameter.side_effect = ParameterNotFound
+
+    with pytest.raises(ImpossibleToDetermineMaxAge):
+        db.get_min_years()

@@ -1,0 +1,2 @@
+class ImpossibleToDetermineMaxAge(BaseException):
+    pass

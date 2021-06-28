@@ -1,3 +1,4 @@
 requests==2.25.1
 boto3==1.17.93
 aws_lambda_powertools==1.17.0
+func_timeout==4.3.5
