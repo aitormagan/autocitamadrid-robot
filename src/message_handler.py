@@ -208,7 +208,7 @@ def handle_min_date(_):
     return message
 
 
-@func_set_timeout(10)
+@func_set_timeout(22)
 def update_centres():
     centres_by_date = defaultdict(lambda: list())
     centres = requests.post("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerCentros",
