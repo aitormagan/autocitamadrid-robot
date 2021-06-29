@@ -4,6 +4,25 @@ from src import telegram_helpers
 
 @patch("src.telegram_helpers.requests")
 @patch("src.telegram_helpers.BOT_TOKEN", "123")
+@patch("src.telegram_helpers.STAGE", "dev")
+def test_given_dev_when_send_text_then_warning_sent(requests_mock):
+
+    chat_id = 123
+    message = "hello!"
+    requests_mock.get.return_value.status_code = 200
+
+    result = telegram_helpers.send_text(chat_id, message)
+
+    url = requests_mock.get.call_args[0][0]
+    assert "https://t.me/vacunacovidmadridbot" in url
+    assert message in url
+
+    assert result == requests_mock.get.return_value.json.return_value
+    requests_mock.get.return_value.raise_for_status.assert_not_called()
+
+
+@patch("src.telegram_helpers.requests")
+@patch("src.telegram_helpers.BOT_TOKEN", "123")
 def test_given_message_when_send_text_then_request_made(requests_mock):
 
     chat_id = 123
