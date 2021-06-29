@@ -81,7 +81,7 @@ def save_min_years(max_years):
         current_years = None
 
     if current_years != max_years:
-        CLIENT_SSM.put_parameter(Name=MIN_YEARS_PARAMETER, Value=str(max_years), Type="String")
+        CLIENT_SSM.put_parameter(Name=MIN_YEARS_PARAMETER, Value=str(max_years), Type="String", Overwrite=True)
 
 
 def get_min_years():

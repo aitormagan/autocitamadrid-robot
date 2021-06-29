@@ -168,7 +168,7 @@ def test_given_param_not_updated_when_save_min_years_then_put_parameter_called(g
     get_min_years_mock.return_value = 21
     db.save_min_years(years)
     client_ssm_mock.put_parameter.assert_called_once_with(Name=db.MIN_YEARS_PARAMETER, Value=str(years),
-                                                          Type="String")
+                                                          Type="String", Overwrite=True)
 
 
 @patch("src.db.CLIENT_SSM")
