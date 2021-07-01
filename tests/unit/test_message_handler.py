@@ -204,9 +204,9 @@ def test_given_subscribed_notified_when_handle_status_then_already_notified(db_m
 
 @freeze_time("2021-06-23")
 @patch("src.message_handler.db")
-@patch("src.message_handler.get_min_years", return_value=45)
-def test_given_not_subscribed_when_handle_current_age_then_you_can_subscribe(get_min_years_mock, db_mock):
+def test_given_not_subscribed_when_handle_current_age_then_you_can_subscribe(db_mock):
     db_mock.get_user_notification.return_value = None
+    db_mock.get_min_years.return_value = 45
     user_id = MagicMock()
 
     result = message_handler.handle_current_age({
@@ -226,9 +226,9 @@ def test_given_not_subscribed_when_handle_current_age_then_you_can_subscribe(get
 
 @freeze_time("2021-06-23")
 @patch("src.message_handler.db")
-@patch("src.message_handler.get_min_years", return_value=45)
-def test_given_subscribed_when_handle_current_age_then_message_with_age(get_min_years_mock, db_mock):
+def test_given_subscribed_when_handle_current_age_then_message_with_age(db_mock):
     db_mock.get_user_notification.return_value = MagicMock()
+    db_mock.get_min_years.return_value = 45
     user_id = MagicMock()
 
     result = message_handler.handle_current_age({

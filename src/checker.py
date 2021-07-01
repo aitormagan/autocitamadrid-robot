@@ -22,17 +22,8 @@ def mark_as_notified(user_info):
     save_notification(user_info["user_id"], user_info["name"], user_info["age"], True)
 
 
-def get_min_years():
-    try:
-        years = _get_min_years()
-    except (FunctionTimedOut, requests.exceptions.RequestException):
-        years = db_get_min_years()
-
-    return years
-
-
 @func_set_timeout(15)
-def _get_min_years():
+def get_min_years():
     req = requests.get("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/assets/config/app-config.json",
                        verify=False, timeout=5)
 
@@ -46,7 +37,7 @@ def _get_min_years():
 
 
 def main():
-    min_years = _get_min_years()
+    min_years = get_min_years()
     non_notified = get_non_notified_people()
 
     for person in non_notified:

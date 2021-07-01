@@ -98,7 +98,7 @@ def handle_status(update):
 def handle_current_age(update):
     user_info = update.get("message", {}).get("from", {})
     user_id = user_info.get("id")
-    min_years = get_min_years()
+    min_years = db.get_min_years()
     max_year_of_birth = datetime.now().year - min_years
     message = f"El sistema de autocita permite pedir cita a personas nacidas en {max_year_of_birth} o antes. " \
               f"Si cumples con este criterio, no esperes más y ve a " \

@@ -36,6 +36,9 @@ custom:
   update_centres_time:
     dev: 300
     pro: 1200
+  checker_rate:
+    dev: 360
+    pro: 10
 
 
 provider:
@@ -83,7 +86,7 @@ functions:
     handler: main.handle_check
     timeout: 900
     events:
-      - schedule: rate(20 minutes)
+      - schedule: rate(${self:custom.checker_rate.${opt:stage, self:provider.stage}} minutes)
 
 resources:
   Resources:
