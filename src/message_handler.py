@@ -6,7 +6,6 @@ from aws_lambda_powertools import Logger
 import requests
 from src import telegram_helpers
 from src import db
-from src.checker import get_min_years
 from func_timeout import func_set_timeout
 from func_timeout.exceptions import FunctionTimedOut
 
@@ -129,7 +128,7 @@ def handle_generic_message(update):
     today_year = datetime.now().year
 
     if age is not None:
-        min_years = get_min_years()
+        min_years = db.get_min_years()
 
         if age >= min_years:
             message = "‼️ ¡Ey! Parece que el sistema ya te permite pedir cita. Hazlo ya en 🔗 " \

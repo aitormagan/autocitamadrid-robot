@@ -21,7 +21,7 @@ def test_get_age(text, expected_age):
     assert message_handler.get_age(text) == expected_age
 
 
-@patch("src.message_handler.get_min_years", return_value=45)
+@patch("src.message_handler.db.get_min_years", return_value=45)
 @patch("src.message_handler.get_age", return_value=45)
 def test_given_age_above_min_years_when_handle_generic_then_you_can_already_join(get_age_mock, get_min_years_mock):
     text = MagicMock()
@@ -44,7 +44,7 @@ def test_given_age_above_min_years_when_handle_generic_then_you_can_already_join
     get_min_years_mock.assert_called_once_with()
 
 
-@patch("src.message_handler.get_min_years", return_value=45)
+@patch("src.message_handler.db.get_min_years", return_value=45)
 @patch("src.message_handler.get_age", return_value=None)
 def test_given_no_age_when_handle_generic_then_not_understood(get_age_mock, get_min_years_mock):
     text = MagicMock()
@@ -68,7 +68,7 @@ def test_given_no_age_when_handle_generic_then_not_understood(get_age_mock, get_
 
 
 @freeze_time("2021-06-23")
-@patch("src.message_handler.get_min_years", return_value=45)
+@patch("src.message_handler.db.get_min_years", return_value=45)
 @patch("src.message_handler.get_age", return_value=44)
 @patch("src.message_handler.db")
 def test_given_below_when_handle_generic_then_subscription(db_mock, get_age_mock, get_min_years_mock):
@@ -96,7 +96,7 @@ def test_given_below_when_handle_generic_then_subscription(db_mock, get_age_mock
 
 
 @freeze_time("2021-06-23")
-@patch("src.message_handler.get_min_years", return_value=45)
+@patch("src.message_handler.db.get_min_years", return_value=45)
 @patch("src.message_handler.get_age", return_value=44)
 @patch("src.message_handler.db")
 def test_given_below_and_previous_subscription_when_handle_generic_then_alert_message(db_mock, get_age_mock,
