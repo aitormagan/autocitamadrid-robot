@@ -615,59 +615,50 @@ def test_given_info_updated_when_handle_min_date_then_update_centres_not_called(
 
 @freeze_time("2021-06-22 10:01:02")
 @patch("src.message_handler.requests")
-@patch("src.message_handler.get_spots_body")
+@patch("src.message_handler.get_centre_min_date")
 @patch("src.message_handler.db")
-def test_given_two_centres_same_date_when_update_centres_then_info_grouped(db_mock, get_spots_body_mock,
+def test_given_one_centres_no_date_when_update_centres_then_info_empty(db_mock, get_centre_min_date,
                                                                            requests_mock):
-    hosp1_id = 1
-    hosp1_desc = "hosp1"
-    hosp1_agendas = MagicMock()
-    hosp1_prestacion = "123"
 
-    hosp2_id = 2
-    hosp2_desc = "hosp2"
-    hosp2_agendas = MagicMock()
-    hosp2_prestacion = "456"
+    hosp = MagicMock()
+    centres_response = [
+        hosp
+    ]
+
+    get_centre_min_date.return_value = None
+
+    requests_mock.post.return_value.json.return_value = centres_response
+
+    centres, last_update = message_handler.update_centres()
+
+    assert dict(centres) == {
+    }
+
+    get_centre_min_date.assert_called_once_with(hosp)
+    db_mock.save_min_date_info.assert_called_once_with(centres, last_update)
+
+
+@freeze_time("2021-06-22 10:01:02")
+@patch("src.message_handler.requests")
+@patch("src.message_handler.get_centre_min_date")
+@patch("src.message_handler.db")
+def test_given_two_centres_same_date_when_update_centres_then_info_grouped(db_mock, get_centre_min_date,
+                                                                           requests_mock):
+
+    hosp1 = {
+        "descripcion": "hosp1"
+    }
+    hosp2 = {
+        "descripcion": "hosp2"
+    }
 
     centres_response = [
-        {
-            "idCentro": hosp1_id,
-            "descripcion": hosp1_desc,
-            "agendas": hosp1_agendas,
-            "idPrestacion": hosp1_prestacion
-        }, {
-            "idCentro": hosp2_id,
-            "descripcion": hosp2_desc,
-            "agendas": hosp2_agendas,
-            "idPrestacion": hosp2_prestacion
-        }
+        hosp1, hosp2
     ]
 
-    hosp1_spots = [
-        {
-            "fecha": "29-06-2021"
-        },
-        {
-            "fecha": "28-06-2021"
-        }
-    ]
+    get_centre_min_date.return_value = datetime(2021, 6, 28)
 
-    hosp2_spots = [
-        {
-            "fecha": "28-06-2021"
-        },
-        {
-            "fecha": "30-06-2021"
-        }
-    ]
-
-    requests_mock.post.return_value.json.side_effect = [
-        centres_response,
-        hosp1_spots,
-        hosp1_spots,
-        hosp2_spots,
-        hosp2_spots
-    ]
+    requests_mock.post.return_value.json.return_value = centres_response
 
     centres, last_update = message_handler.update_centres()
 
@@ -675,47 +666,60 @@ def test_given_two_centres_same_date_when_update_centres_then_info_grouped(db_mo
         datetime(2021, 6, 28): ["hosp1", "hosp2"]
     }
 
-    get_spots_body_mock.assert_has_calls([
-        call(hosp1_id, hosp1_prestacion, hosp1_agendas),
-        call(hosp1_id, hosp1_prestacion, hosp1_agendas, month_modifier=1),
-        call(hosp2_id, hosp2_prestacion, hosp2_agendas),
-        call(hosp2_id, hosp2_prestacion, hosp2_agendas, month_modifier=1),
-    ])
-
+    get_centre_min_date.assert_has_calls([call(hosp1), call(hosp2)])
     db_mock.save_min_date_info.assert_called_once_with(centres, last_update)
 
 
 @freeze_time("2021-06-22 10:01:02")
 @patch("src.message_handler.requests")
-@patch("src.message_handler.get_spots_body")
+@patch("src.message_handler.get_centre_min_date")
 @patch("src.message_handler.db")
-def test_given_two_centres_diff_date_when_update_centres_then_info_separated(db_mock, get_spots_body_mock,
+def test_given_two_centres_diff_date_when_update_centres_then_info_separated(db_mock, get_centre_min_date,
                                                                              requests_mock):
-    hosp1_id = 1
-    hosp1_desc = "hosp1"
-    hosp1_agendas = MagicMock()
-    hosp1_prestacion = "123"
 
-    hosp2_id = 2
-    hosp2_desc = "hosp2"
-    hosp2_agendas = MagicMock()
-    hosp2_prestacion = "456"
+    hosp1 = {
+        "descripcion": "hosp1"
+    }
+    hosp2 = {
+        "descripcion": "hosp2"
+    }
 
     centres_response = [
-        {
-            "idCentro": hosp1_id,
-            "descripcion": hosp1_desc,
-            "agendas": hosp1_agendas,
-            "idPrestacion": hosp1_prestacion
-        }, {
-            "idCentro": hosp2_id,
-            "descripcion": hosp2_desc,
-            "agendas": hosp2_agendas,
-            "idPrestacion": hosp2_prestacion
-        }
+        hosp1, hosp2
     ]
 
-    hosp1_spots = [
+    get_centre_min_date.side_effect = [datetime(2021, 6, 28), datetime(2021, 6, 30)]
+
+    requests_mock.post.return_value.json.return_value = centres_response
+
+    centres, last_update = message_handler.update_centres()
+
+    assert dict(centres) == {
+        datetime(2021, 6, 28): ["hosp1"],
+        datetime(2021, 6, 30): ["hosp2"]
+    }
+
+    get_centre_min_date.assert_has_calls([call(hosp1), call(hosp2)])
+    db_mock.save_min_date_info.assert_called_once_with(centres, last_update)
+
+@freeze_time("2021-06-22 10:01:02")
+@patch("src.message_handler.requests")
+@patch("src.message_handler.get_spots_body")
+def test_given_data_in_current_month_when_get_centre_mindate_then_only_one_schedule_request_made(get_spots_body_mock,
+                                                                                                 requests_mock):
+    hosp_id = 1
+    hosp_desc = "hosp1"
+    hosp_agendas = MagicMock()
+    hosp_prestacion = "123"
+
+    centre = {
+        "idCentro": hosp_id,
+        "descripcion": hosp_desc,
+        "agendas": hosp_agendas,
+        "idPrestacion": hosp_prestacion
+    }
+
+    hosp_spots = [
         {
             "fecha": "29-06-2021"
         },
@@ -724,38 +728,171 @@ def test_given_two_centres_diff_date_when_update_centres_then_info_separated(db_
         }
     ]
 
-    hosp2_spots = [
+    requests_mock.post.return_value.json.return_value = hosp_spots
+
+    min_date = message_handler.get_centre_min_date(centre)
+
+    assert min_date == datetime(2021, 6, 28)
+    requests_mock.post.assert_called_once_with(ANY, json=get_spots_body_mock.return_value, verify=False)
+    get_spots_body_mock.assert_called_once_with(hosp_id, hosp_prestacion, hosp_agendas)
+
+
+@freeze_time("2021-06-22 10:01:02")
+@patch("src.message_handler.requests")
+@patch("src.message_handler.get_spots_body")
+def test_given_no_data_in_current_month_when_get_centre_mindate_then_two_schedule_request_made(get_spots_body_mock,
+                                                                                               requests_mock):
+    hosp_id = 1
+    hosp_desc = "hosp1"
+    hosp_agendas = MagicMock()
+    hosp_prestacion = "123"
+
+    body1 = MagicMock()
+    body2 = MagicMock()
+    get_spots_body_mock.side_effect = [body1, body2]
+
+    centre = {
+        "idCentro": hosp_id,
+        "descripcion": hosp_desc,
+        "agendas": hosp_agendas,
+        "idPrestacion": hosp_prestacion
+    }
+
+    hosp_spots = [
         {
-            "fecha": "28-06-2021"
+            "fecha": "29-07-2021"
         },
         {
-            "fecha": "23-06-2021"
+            "fecha": "28-07-2021"
         }
     ]
 
-    requests_mock.post.return_value.json.side_effect = [
-        centres_response,
-        hosp1_spots,
-        hosp1_spots,
-        hosp2_spots,
-        hosp2_spots
-    ]
+    requests_mock.post.return_value.json.side_effect = [[], hosp_spots]
 
-    centres, last_update = message_handler.update_centres()
+    min_date = message_handler.get_centre_min_date(centre)
 
-    assert dict(centres) == {
-        datetime(2021, 6, 23): ["hosp2"],
-        datetime(2021, 6, 28): ["hosp1"]
+    assert min_date == datetime(2021, 7, 28)
+
+    requests_mock.post.assert_has_calls([call(ANY, json=body1, verify=False),
+                                         call().json(),
+                                         call(ANY, json=body2, verify=False),
+                                         call().json()])
+    get_spots_body_mock.assert_has_calls([call(hosp_id, hosp_prestacion, hosp_agendas),
+                                          call(hosp_id, hosp_prestacion, hosp_agendas, month_modifier=1)])
+
+
+@freeze_time("2021-06-22 10:01:02")
+@patch("src.message_handler.requests")
+@patch("src.message_handler.get_spots_body")
+def test_given_curr_month_not_a__list_when_get_centre_mindate_then_two_schedule_request_made(get_spots_body_mock,
+                                                                                             requests_mock):
+    hosp_id = 1
+    hosp_desc = "hosp1"
+    hosp_agendas = MagicMock()
+    hosp_prestacion = "123"
+
+    body1 = MagicMock()
+    body2 = MagicMock()
+    get_spots_body_mock.side_effect = [body1, body2]
+
+    centre = {
+        "idCentro": hosp_id,
+        "descripcion": hosp_desc,
+        "agendas": hosp_agendas,
+        "idPrestacion": hosp_prestacion
     }
 
-    get_spots_body_mock.assert_has_calls([
-        call(hosp1_id, hosp1_prestacion, hosp1_agendas),
-        call(hosp1_id, hosp1_prestacion, hosp1_agendas, month_modifier=1),
-        call(hosp2_id, hosp2_prestacion, hosp2_agendas),
-        call(hosp2_id, hosp2_prestacion, hosp2_agendas, month_modifier=1),
-    ])
+    hosp_spots = [
+        {
+            "fecha": "29-07-2021"
+        },
+        {
+            "fecha": "28-07-2021"
+        }
+    ]
 
-    db_mock.save_min_date_info.assert_called_once_with(centres, last_update)
+    requests_mock.post.return_value.json.side_effect = [{}, hosp_spots]
+
+    min_date = message_handler.get_centre_min_date(centre)
+
+    assert min_date == datetime(2021, 7, 28)
+
+    requests_mock.post.assert_has_calls([call(ANY, json=body1, verify=False),
+                                         call().json(),
+                                         call(ANY, json=body2, verify=False),
+                                         call().json()])
+    get_spots_body_mock.assert_has_calls([call(hosp_id, hosp_prestacion, hosp_agendas),
+                                          call(hosp_id, hosp_prestacion, hosp_agendas, month_modifier=1)])
+
+
+@freeze_time("2021-06-22 10:01:02")
+@patch("src.message_handler.requests")
+@patch("src.message_handler.get_spots_body")
+def test_given_no_data_in_both_months_when_get_centre_mindate_then_none_returned(get_spots_body_mock,
+                                                                                 requests_mock):
+    hosp_id = 1
+    hosp_desc = "hosp1"
+    hosp_agendas = MagicMock()
+    hosp_prestacion = "123"
+
+    body1 = MagicMock()
+    body2 = MagicMock()
+    get_spots_body_mock.side_effect = [body1, body2]
+
+    centre = {
+        "idCentro": hosp_id,
+        "descripcion": hosp_desc,
+        "agendas": hosp_agendas,
+        "idPrestacion": hosp_prestacion
+    }
+
+    requests_mock.post.return_value.json.side_effect = [[], []]
+
+    min_date = message_handler.get_centre_min_date(centre)
+
+    assert min_date is None
+
+    requests_mock.post.assert_has_calls([call(ANY, json=body1, verify=False),
+                                         call().json(),
+                                         call(ANY, json=body2, verify=False),
+                                         call().json()])
+    get_spots_body_mock.assert_has_calls([call(hosp_id, hosp_prestacion, hosp_agendas),
+                                          call(hosp_id, hosp_prestacion, hosp_agendas, month_modifier=1)])
+
+
+@freeze_time("2021-06-22 10:01:02")
+@patch("src.message_handler.requests")
+@patch("src.message_handler.get_spots_body")
+def test_given_info_not_a_list_in_both_months_when_get_centre_mindate_then_none_returned(get_spots_body_mock,
+                                                                                         requests_mock):
+    hosp_id = 1
+    hosp_desc = "hosp1"
+    hosp_agendas = MagicMock()
+    hosp_prestacion = "123"
+
+    body1 = MagicMock()
+    body2 = MagicMock()
+    get_spots_body_mock.side_effect = [body1, body2]
+
+    centre = {
+        "idCentro": hosp_id,
+        "descripcion": hosp_desc,
+        "agendas": hosp_agendas,
+        "idPrestacion": hosp_prestacion
+    }
+
+    requests_mock.post.return_value.json.side_effect = [{}, {}]
+
+    min_date = message_handler.get_centre_min_date(centre)
+
+    assert min_date is None
+
+    requests_mock.post.assert_has_calls([call(ANY, json=body1, verify=False),
+                                         call().json(),
+                                         call(ANY, json=body2, verify=False),
+                                         call().json()])
+    get_spots_body_mock.assert_has_calls([call(hosp_id, hosp_prestacion, hosp_agendas),
+                                          call(hosp_id, hosp_prestacion, hosp_agendas, month_modifier=1)])
 
 
 @freeze_time("2021-06-22")
