@@ -6,7 +6,6 @@ from aws_lambda_powertools import Logger
 import requests
 from src import telegram_helpers
 from src import db
-from src.checker import get_min_years
 from func_timeout import func_set_timeout
 from func_timeout.exceptions import FunctionTimedOut
 
@@ -98,7 +97,7 @@ def handle_status(update):
 def handle_current_age(update):
     user_info = update.get("message", {}).get("from", {})
     user_id = user_info.get("id")
-    min_years = get_min_years()
+    min_years = db.get_min_years()
     max_year_of_birth = datetime.now().year - min_years
     message = f"El sistema de autocita permite pedir cita a personas nacidas en {max_year_of_birth} o antes. " \
               f"Si cumples con este criterio, no esperes más y ve a " \
@@ -129,7 +128,7 @@ def handle_generic_message(update):
     today_year = datetime.now().year
 
     if age is not None:
-        min_years = get_min_years()
+        min_years = db.get_min_years()
 
         if age >= min_years:
             message = "‼️ ¡Ey! Parece que el sistema ya te permite pedir cita. Hazlo ya en 🔗 " \
@@ -215,28 +214,33 @@ def update_centres():
                             json={"edad_paciente": 45}, verify=False).json()
 
     for centre in centres:
-        data_curr_month = requests.post(
-            "https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerHuecosMes",
-            json=get_spots_body(centre["idCentro"], centre["idPrestacion"], centre["agendas"]),
-            verify=False).json()
-        data_next_month = requests.post(
-            "https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerHuecosMes",
-            json=get_spots_body(centre["idCentro"], centre["idPrestacion"], centre["agendas"],
-                                month_modifier=1),
-            verify=False).json()
-
-        data = []
-        data.extend(data_curr_month if type(data_curr_month) == list else [])
-        data.extend(data_next_month if type(data_next_month) == list else [])
-        dates = [x.get("fecha") for x in data]
-        dates = [datetime.strptime(x, "%d-%m-%Y") for x in dates]
-        if dates:
-            centres_by_date[min(dates)].append(centre['descripcion'].replace("_", "-"))
+        centre_min_date = get_centre_min_date(centre)
+        if centre_min_date:
+            centres_by_date[centre_min_date].append(centre['descripcion'].replace("_", "-"))
 
     last_update = datetime.now()
     db.save_min_date_info(centres_by_date, last_update)
 
     return centres_by_date, last_update
+
+
+def get_centre_min_date(centre):
+    data = requests.post(
+        "https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerHuecosMes",
+        json=get_spots_body(centre["idCentro"], centre["idPrestacion"], centre["agendas"]),
+        verify=False).json()
+
+    if type(data) != list or len(data) == 0:
+        data = requests.post(
+            "https://autocitavacuna.sanidadmadrid.org/ohcitacovid/autocita/obtenerHuecosMes",
+            json=get_spots_body(centre["idCentro"], centre["idPrestacion"], centre["agendas"],
+                                month_modifier=1),
+            verify=False).json()
+
+    data = data if type(data) == list else []
+    dates = [x.get("fecha") for x in data]
+    dates = [datetime.strptime(x, "%d-%m-%Y") for x in dates]
+    return min(dates) if dates else None
 
 
 def get_spots_body(id_centre, id_prestacion, agendas, month_modifier=0):
@@ -253,3 +257,11 @@ def get_spots_body(id_centre, id_prestacion, agendas, month_modifier=0):
         "horaInicio": "00:00",
         "horaFin": "23:59"
     }
+
+
+if __name__ == '__main__':
+    prev = datetime.now()
+    centres, _ = update_centres()
+    now = datetime.now()
+    print(centres)
+    print(now - prev)

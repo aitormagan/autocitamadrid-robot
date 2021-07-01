@@ -30,35 +30,26 @@ def test_when_mark_as_notified_then_db_updated(save_notification_mock):
     save_notification_mock.assert_called_once_with(user_id, name, age, True)
 
 
-@patch("src.checker._get_min_years", return_value=24)
-def test_given_no_error_when_get_min_years_then_aux_result_returned(get_min_years_aux_mock):
-    assert checker.get_min_years() == 24
-
-
-@patch("src.checker._get_min_years", side_effect=FunctionTimedOut)
-@patch("src.checker.db_get_min_years", return_value=32)
-def test_given_error_when_get_min_years_then_aux_result_returned(db_get_min_years_mock, get_min_years_aux_mock):
-    assert checker.get_min_years() == 32
-
-
 @patch("src.checker.requests")
 @patch("src.checker.save_min_years")
 @freeze_time("2021-06-20")
-def test_given_1990_as_year_when_get_min_years_aux_then_31_returned(save_min_years_mock, requests_mock):
+def test_given_1990_as_year_when_get_min_years_then_31_returned(save_min_years_mock, requests_mock):
     requests_mock.get.return_value.json.return_value = {
         "dFin_Birthday": "31/12/1990"
     }
 
-    assert checker._get_min_years() == 31
+    assert checker.get_min_years() == 31
     save_min_years_mock.assert_called_once_with(31)
 
 
 @patch("src.checker.mark_as_notified")
 @patch("src.checker.notify")
 @patch("src.checker.get_non_notified_people")
-@patch("src.checker._get_min_years", return_value=45)
-def test_when_main_then_only_people_above_min_age_notified(get_min_years_mock, get_non_notified_people_mock,
-                                                           notify_mock, mark_as_notified_mock):
+@patch("src.checker.get_min_years", return_value=45)
+@patch("src.checker.db_get_min_years", return_value=50)
+def test_given_age_changes_when_main_then_only_people_above_min_age_notified(db_get_min_years_mock, get_min_years_mock,
+                                                                             get_non_notified_people_mock,
+                                                                             notify_mock, mark_as_notified_mock):
 
     get_non_notified_people_mock.return_value = [
         {
@@ -85,3 +76,19 @@ def test_when_main_then_only_people_above_min_age_notified(get_min_years_mock, g
                                   call(45, get_non_notified_people_mock.return_value[2])])
     mark_as_notified_mock.assert_has_calls([call(get_non_notified_people_mock.return_value[1]),
                                             call(get_non_notified_people_mock.return_value[2])])
+
+
+@patch("src.checker.mark_as_notified")
+@patch("src.checker.notify")
+@patch("src.checker.get_non_notified_people")
+@patch("src.checker.get_min_years", return_value=45)
+@patch("src.checker.db_get_min_years", return_value=45)
+def test_given_age_does_not_change_when_main_then_only_people_not_notified(db_get_min_years_mock, get_min_years_mock,
+                                                                           get_non_notified_people_mock,
+                                                                           notify_mock, mark_as_notified_mock):
+
+    checker.main()
+
+    get_non_notified_people_mock.assert_not_called()
+    notify_mock.assert_not_called()
+    mark_as_notified_mock.assert_not_called()
