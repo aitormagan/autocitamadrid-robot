@@ -37,11 +37,14 @@ def get_min_years():
 
 
 def main():
+    previous_min_years = db_get_min_years()
     min_years = get_min_years()
-    non_notified = get_non_notified_people()
 
-    for person in non_notified:
-        if min_years <= person.get("age"):
-            logger.info(f"Notifying user with id {person['user_id']}")
-            notify(min_years, person)
-            mark_as_notified(person)
+    if min_years != previous_min_years:
+        non_notified = get_non_notified_people()
+
+        for person in non_notified:
+            if min_years <= person.get("age"):
+                logger.info(f"Notifying user with id {person['user_id']}")
+                notify(min_years, person)
+                mark_as_notified(person)
