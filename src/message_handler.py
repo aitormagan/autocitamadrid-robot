@@ -257,11 +257,3 @@ def get_spots_body(id_centre, id_prestacion, agendas, month_modifier=0):
         "horaInicio": "00:00",
         "horaFin": "23:59"
     }
-
-
-if __name__ == '__main__':
-    prev = datetime.now()
-    centres, _ = update_centres()
-    now = datetime.now()
-    print(centres)
-    print(now - prev)
