@@ -32,7 +32,7 @@ custom:
     pro: "vaccine-notifications-pro"
   throughput:
     dev: 1
-    pro: 5
+    pro: 10
   update_centres_time:
     dev: 21600
     pro: 1200
