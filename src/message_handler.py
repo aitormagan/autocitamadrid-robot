@@ -32,8 +32,8 @@ def handle_update(update):
             elif message == "/subscribe":
                 answer = handle_subscribe(update)
             elif message == "/mindate":
-                telegram_helpers.send_text(user_id, "⌛ Esto me puede llevar unos segunditos...")
-                answer = handle_min_date(update)
+                # telegram_helpers.send_text(user_id, "⌛ Esto me puede llevar unos segunditos...")
+                answer = "Perdoname 🙏, pero la Comunidad de Madrid ha cambiado el sistema para impedirme darte esta información 😓. Intentaremos solventar este escollo 😉."
             else:
                 answer = handle_generic_message(update)
         except Exception:
