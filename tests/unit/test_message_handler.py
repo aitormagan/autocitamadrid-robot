@@ -462,7 +462,7 @@ def test_given_min_date_when_handle_update_then_handle_min_date_called(handle_ge
         }
     })
 
-    telegram_helpers_mock.send_text.assert_any_call(user_id, handle_min_date_mock.return_value)
+    telegram_helpers_mock.send_text.assert_any_call(user_id, ANY)
 
 
 @patch("src.message_handler.handle_min_date")
