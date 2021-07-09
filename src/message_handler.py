@@ -33,7 +33,7 @@ def handle_update(update):
                 answer = handle_subscribe(update)
             elif message == "/mindate":
                 # telegram_helpers.send_text(user_id, "⌛ Esto me puede llevar unos segunditos...")
-                answer = "Perdoname 🙏, pero la Comunidad de Madrid ha cambiado el sistema para impedirme darte esta información 😓. Intentaremos solventar este escollo 😉."
+                answer = "Perdoname 🙏, pero la Comunidad de Madrid ha cambiado el sistema para impedirme darte esta información 😓."
             else:
                 answer = handle_generic_message(update)
         except Exception:
@@ -60,8 +60,7 @@ def handle_start(update):
            f"tu año de nacimiento!\n\nOtros comandos útiles:\n- /subscribe: 🔔 Crea una suscripción para " \
            f"cuando puedas pedir cita para vacunarte\n- /help: 🙋 Muestra esta ayuda\n- /status: " \
            f"ℹ️ Muestra si ya estás suscrito\n- /cancel: 🔕 Cancela la notificación registrada\n - /currentage: " \
-           f"📆 Muestra la edad mínima con la que puedes pedir cita\n - /mindate: 📆 Lista las primeras citas " \
-           f"disponibles en los distintos centros de vacunación."
+           f"📆 Muestra la edad mínima con la que puedes pedir cita"
 
 
 def handle_cancel(update):
