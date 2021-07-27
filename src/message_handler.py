@@ -133,6 +133,11 @@ def handle_generic_message(update):
         if age >= min_years:
             message = "‼️ ¡Ey! Parece que el sistema ya te permite pedir cita. Hazlo ya en 🔗 " \
                       "https://autocitavacuna.sanidadmadrid.org/ohcitacovid/"
+        elif age < 12:
+            message = "Lo siento 🥺, pero no hay vacunas 💉 aprobadas para menores de 12 años y por tanto no parece " \
+                      "que el sistema te vaya a permitir en algún momento solicitar cita. Aún así, siempre puedes " \
+                      "consultar /currentage para obtener la edad mínima con la que el sistema de autocita permite " \
+                      "pedir citas."
         else:
             user_notification = db.get_user_notification(user_id)
             db.save_notification(user_id, user_name, age)
