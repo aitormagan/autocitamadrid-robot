@@ -45,6 +45,32 @@ def test_given_age_above_min_years_when_handle_generic_then_you_can_already_join
 
 
 @patch("src.message_handler.db.get_min_years", return_value=45)
+@patch("src.message_handler.get_age", return_value=11)
+@patch("src.message_handler.db")
+def test_given_age_above_min_years_when_handle_generic_then_you_can_already_join(db_mock, get_age_mock,
+                                                                                 get_min_years_mock):
+    text = MagicMock()
+    user_id = MagicMock()
+    first_name = "Aitor"
+
+    result = message_handler.handle_generic_message({
+        "message": {
+            "text": text,
+            "from": {
+                "id": user_id,
+                "first_name": first_name
+            }
+        }
+    })
+
+    assert "aprobadas para menores de 12 años" in result
+
+    get_age_mock.assert_called_once_with(text)
+    get_min_years_mock.assert_called_once_with()
+    db_mock.save_notification.assert_not_called()
+
+
+@patch("src.message_handler.db.get_min_years", return_value=45)
 @patch("src.message_handler.get_age", return_value=None)
 def test_given_no_age_when_handle_generic_then_not_understood(get_age_mock, get_min_years_mock):
     text = MagicMock()
@@ -69,7 +95,7 @@ def test_given_no_age_when_handle_generic_then_not_understood(get_age_mock, get_
 
 @freeze_time("2021-06-23")
 @patch("src.message_handler.db.get_min_years", return_value=45)
-@patch("src.message_handler.get_age", return_value=44)
+@patch("src.message_handler.get_age", return_value=12)
 @patch("src.message_handler.db")
 def test_given_below_when_handle_generic_then_subscription(db_mock, get_age_mock, get_min_years_mock):
     text = MagicMock()
@@ -87,12 +113,12 @@ def test_given_below_when_handle_generic_then_subscription(db_mock, get_age_mock
         }
     })
 
-    assert "permita pedir cita a gente nacida en 1977" in result
+    assert "permita pedir cita a gente nacida en 2009" in result
     assert "Ya tenías" not in result
 
     get_age_mock.assert_called_once_with(text)
     get_min_years_mock.assert_called_once_with()
-    db_mock.save_notification.assert_called_once_with(user_id, first_name, 44)
+    db_mock.save_notification.assert_called_once_with(user_id, first_name, 12)
 
 
 @freeze_time("2021-06-23")
