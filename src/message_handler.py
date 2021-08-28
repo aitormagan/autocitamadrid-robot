@@ -12,6 +12,7 @@ def handle_update(update):
     message = update.get("message", {}).get("text", "")
     user_info = update.get("message", {}).get("from", {})
     user_id = user_info.get("id")
+    name = user_info.get("first_name", "")
 
     if user_id:
         answer = "¡Ahora puedes vacunarte sin cita previa 🎉! Aquí tienes la lista de centros donde puedes " \
