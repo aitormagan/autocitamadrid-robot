@@ -22,6 +22,9 @@ def handle_update(update):
 
         if message in ["/start", "/help"]:
             answer = f"¡Hola {name}! Bienvenidx al sistema de notificación de vacunación.\n\n{answer}"
+        elif message in ["/cancel"]:
+            answer = "Si quieres borrar tu suscripción sólo tienes que detener el bot. Para ello, accede al perfil y " \
+                     "haz click en *Detener bot*."
 
         update["answer"] = answer
         logger.info(update)
