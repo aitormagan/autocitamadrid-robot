@@ -35,8 +35,8 @@ def handle_update(update):
                 # telegram_helpers.send_text(user_id, "⌛ Esto me puede llevar unos segunditos...")
                 answer = "¡Ahora puedes vacunarte sin cita previa 🎉! Aquí tienes la lista de centros donde puedes " \
                          "hacerlo:\n\n➡️ *Wizink Center*: 24h\n➡️ *Wanda Metropolitano*: de 9.30 a 14:30 y de 15:30 " \
-                         "a 20:30 (salvo días de partido, el previo y el posterior)\n➡️ *Hospital Enfermera Isabel " \
-                         "Zendal*: 24h\n➡️ *[Puntos Centralizados de Vacunación](https://shorturl.at/itBER)*: de " \
+                         "a 20:30 (salvo días de partido, el anterior y el posterior)\n➡️ *Hospital Enfermera Isabel " \
+                         "Zendal*: 24h\n➡️ [Puntos Centralizados de Vacunación](https://shorturl.at/itBER): de " \
                          "9.30 a 18.00\n\n¡No esperes más, vacúnate 💉 ya!"
             else:
                 answer = handle_generic_message(update)
