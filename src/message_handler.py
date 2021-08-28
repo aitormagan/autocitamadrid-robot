@@ -46,6 +46,7 @@ def handle_current_age(_):
     max_year_of_birth = datetime.now().year - min_years
     message = f"El sistema de autocita permite pedir cita a personas nacidas en {max_year_of_birth} o antes. " \
               f"Si cumples con este criterio, no esperes más y ve a " \
-              f"🔗 https://autocitavacuna.sanidadmadrid.org/ohcitacovid para pedir tu cita."
+              f"🔗 https://autocitavacuna.sanidadmadrid.org/ohcitacovid para pedir tu cita. También te puedes " \
+              f"vacunar sin cita previa. Di /mindate para obtener más información"
 
     return message
