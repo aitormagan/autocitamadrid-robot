@@ -25,8 +25,8 @@ def handle_update(update):
         if message in ["/start", "/help"]:
             answer = f"¡Hola {name}! Bienvenidx al sistema de notificación de vacunación.\n\n{answer}"
         elif message in ["/cancel"]:
-            answer = "Si quieres borrar tu suscripción sólo tienes que detener el bot. Para ello, accede al perfil y " \
-                     "haz click en *Detener bot*."
+            answer = "Si quieres borrar ❌ tu suscripción sólo tienes que detener el bot. Para ello, accede al perfil " \
+                     "y haz click en *Detener bot*."
         elif message == "/currentage":
             answer = handle_current_age(update)
 
@@ -45,8 +45,8 @@ def handle_current_age(_):
     min_years = db.get_min_years()
     max_year_of_birth = datetime.now().year - min_years
     message = f"El sistema de autocita permite pedir cita a personas nacidas en {max_year_of_birth} o antes. " \
-              f"Si cumples con este criterio, no esperes más y ve a " \
-              f"🔗 https://autocitavacuna.sanidadmadrid.org/ohcitacovid para pedir tu cita. También te puedes " \
-              f"vacunar sin cita previa. Di /mindate para obtener más información"
+              f"¡Si cumples con este criterio, no esperes más vacúnate! Ahora puedes hacerlo sin cita 🏃: di " \
+              f"/mindate para obtener más información. También puedes pedir cita 🕘 en " \
+              f"🔗 https://autocitavacuna.sanidadmadrid.org/ohcitacovid"
 
     return message
