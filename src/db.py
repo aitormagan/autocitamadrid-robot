@@ -1,11 +1,7 @@
 import boto3
 import os
-import json
-from datetime import datetime
 from src.exceptions import ImpossibleToDetermineMaxAge
 
-TABLE_NAME = os.environ.get("NOTIFICATIONS_TABLE")
-MIN_DATE_PARAMETER = os.environ.get("PARAM_MIN_DATE")
 MIN_YEARS_PARAMETER = os.environ.get("PARAM_MIN_YEARS")
 CLIENT = boto3.client('dynamodb')
 CLIENT_SSM = boto3.client('ssm')

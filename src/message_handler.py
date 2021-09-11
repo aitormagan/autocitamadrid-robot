@@ -5,7 +5,6 @@ from src import telegram_helpers
 from src import db
 
 
-UPDATE_CENTRES_TIME = int(os.environ.get("UPDATE_CENTRES_TIME", 300))
 logger = Logger(service="vacunacovidmadridbot")
 
 
