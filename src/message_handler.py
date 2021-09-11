@@ -16,17 +16,13 @@ def handle_update(update):
     name = user_info.get("first_name", "")
 
     if user_id:
-        answer = "¡Ahora puedes vacunarte sin cita previa 🎉! Aquí tienes la lista de centros donde puedes " \
-             "hacerlo:\n\n➡️ *Wizink Center*: 24h\n➡️ *Wanda Metropolitano*: de 9.30 a 14:30 y de 15:30 " \
-             "a 20:30 (salvo días de partido, el anterior y el posterior)\n➡️ *Hospital Enfermera Isabel " \
-             "Zendal*: 24h\n➡️ [Puntos Centralizados de Vacunación](https://shorturl.at/itBER): de " \
-             "9.30 a 18.00\n\n¡No esperes más, vacúnate 💉 ya!"
-
+        answer = "¡Ahora puedes vacunarte sin cita previa 🎉! Tienes más info aquí ➡️ " \
+                 "https://www.comunidad.madrid/servicios/salud/vacunacion-frente-coronavirus-comunidad-madrid#plan-vacunacion" \
+                 "\n\n¡No esperes más, vacúnate 💉 ya!"
         if message in ["/start", "/help"]:
             answer = f"¡Hola {name}! Bienvenidx al sistema de notificación de vacunación.\n\n{answer}"
         elif message in ["/cancel"]:
-            answer = "Si quieres borrar ❌ tu suscripción sólo tienes que detener el bot. Para ello, accede al perfil " \
-                     "y haz click en *Detener bot*."
+            answer = "Toda tu información personal ya ha sido eliminada del sistema. ¡Gracias por tu confianza!"
         elif message == "/currentage":
             answer = handle_current_age(update)
 
@@ -38,7 +34,6 @@ def handle_update(update):
             and update["my_chat_member"]["new_chat_member"]["status"] == "kicked":
         user_id = update["my_chat_member"]["from"]["id"]
         logger.info(f"User with id {user_id} stopped the bot")
-        db.delete_notification(user_id)
 
 
 def handle_current_age(_):
