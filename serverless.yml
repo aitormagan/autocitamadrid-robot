@@ -21,24 +21,9 @@ custom:
     definitions:
       functionErrors:
         treatMissingData: notBreaching
-  min_date_param:
-    dev: "/autocita/madrid/dev/min-date-info"
-    pro: "/autocita/madrid/pro/min-date-info"
   min_years_param:
     dev: "/autocita/madrid/dev/min-years"
     pro: "/autocita/madrid/pro/min-years"
-  table:
-    dev: "vaccine-notifications-dev"
-    pro: "vaccine-notifications-pro"
-  throughput:
-    dev: 1
-    pro: 2
-  update_centres_time:
-    dev: 21600
-    pro: 1200
-  checker_rate:
-    dev: 360
-    pro: 10
 
 
 provider:
@@ -62,10 +47,7 @@ provider:
       Resource:
         - "*"
   environment:
-    NOTIFICATIONS_TABLE: ${self:custom.table.${opt:stage, self:provider.stage}}
-    PARAM_MIN_DATE: ${self:custom.min_date_param.${opt:stage, self:provider.stage}}
     BOT_TOKEN: ${env:BOT_TOKEN}
-    UPDATE_CENTRES_TIME: ${self:custom.update_centres_time.${opt:stage, self:provider.stage}}
     PARAM_MIN_YEARS: ${self:custom.min_years_param.${opt:stage, self:provider.stage}}
     STAGE: ${opt:stage}
 
@@ -82,24 +64,3 @@ functions:
           path: '{proxy+}'
           method: ANY
           cors: true
-  checker:
-    handler: main.handle_check
-    timeout: 900
-    events:
-      - schedule: rate(${self:custom.checker_rate.${opt:stage, self:provider.stage}} minutes)
-
-resources:
-  Resources:
-    usersTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:custom.table.${opt:stage, self:provider.stage}}
-        AttributeDefinitions:
-          - AttributeName: user_id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: user_id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: ${self:custom.throughput.${opt:stage, self:provider.stage}}
-          WriteCapacityUnits: ${self:custom.throughput.${opt:stage, self:provider.stage}}
