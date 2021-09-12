@@ -16,7 +16,7 @@ def handle_update(update):
 
     if user_id:
         answer = "¡Ahora puedes vacunarte sin cita previa 🎉! Tienes más info ➡️ [aquí]" + \
-                 "(https://www.comunidad.madrid/servicios/salud/vacunacion-frente-coronavirus-comunidad-madrid#plan-vacunacion)" + \
+                 "(https://www.comunidad.madrid/servicios/salud/vacunacion-frente-coronavirus-comunidad-madrid)" + \
                  "\n\n¡No esperes más, vacúnate 💉 ya!"
         if message in ["/start", "/help"]:
             answer = f"¡Hola {name}! Bienvenidx al sistema de notificación de vacunación.\n\n{answer}"
