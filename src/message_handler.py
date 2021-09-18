@@ -28,6 +28,12 @@ def handle_update(update):
         update["answer"] = answer
         logger.info(update)
         telegram_helpers.send_text(user_id, answer)
+        telegram_helpers.send_text(user_id, "🤔 ¿Vives en Madrid? ¿Usas mucho el metro? ¡Ahora tienes un nuevo "
+                                            "🤖 bot disponible! Con "
+                                            "[Metro Madrid - Tiempos de Espera](t.me/MetroMadridTiempoEsperaBot) "
+                                            "puedes obtener los tiempos de espera en cualquier 🚇 estación de metro "
+                                            "con simplemente 🗣️ decir el nombre o mandar tu 📍 ubicación.\n\n¡No "
+                                            "esperes más y pruébalo ya!")
     elif "my_chat_member" in update and "new_chat_member" in update["my_chat_member"] \
             and "status" in update["my_chat_member"]["new_chat_member"] \
             and update["my_chat_member"]["new_chat_member"]["status"] == "kicked":
