@@ -27,11 +27,11 @@ jobs:
     - name: Run tox
       run: |
         tox
-    - name: Update Coverage report
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        coveralls --service=github
+#    - name: Update Coverage report
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      run: |
+#        coveralls --service=github
     - name: Download Node
       uses: actions/setup-node@v1
       with:
