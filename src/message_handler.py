@@ -1,4 +1,5 @@
 import os
+import requests
 from datetime import datetime
 from aws_lambda_powertools import Logger
 from src import telegram_helpers
@@ -42,8 +43,7 @@ def handle_update(update):
 
 
 def handle_current_age(_):
-    min_years = db.get_min_years()
-    max_year_of_birth = datetime.now().year - min_years
+    max_year_of_birth = requests.get("https://autocitavacuna.sanidadmadrid.org/ohcitacovid/assets/config/app-config.json").json()["dFin_Birthday"].split("/")[-1]
     message = f"El sistema de autocita permite pedir cita a personas nacidas en {max_year_of_birth} o antes. " \
               f"¡Si cumples con este criterio, no esperes más vacúnate! Ahora puedes hacerlo sin cita 🏃: di " \
               f"/mindate para obtener más información. También puedes pedir cita 🕘 en " \
