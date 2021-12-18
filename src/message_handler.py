@@ -4,7 +4,7 @@ from src import telegram_helpers
 
 
 URL_AUTOCITA_CONFIG = "https://autocitavacuna.sanidadmadrid.org/ohcitacovid/assets/config/app-config.json"
-YEAR_BOOSTER = 1961
+YEAR_BOOSTER = 1966
 logger = Logger(service="vacunacovidmadridbot")
 
 
