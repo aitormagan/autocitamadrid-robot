@@ -37,8 +37,6 @@ def handle_update(update):
         logger.info(update)
         for answer in answers:
             telegram_helpers.send_text(user_id, answer)
-
-        telegram_helpers.send_text(user_id, )
     elif "my_chat_member" in update and "new_chat_member" in update["my_chat_member"] \
             and "status" in update["my_chat_member"]["new_chat_member"] \
             and update["my_chat_member"]["new_chat_member"]["status"] == "kicked":
@@ -71,7 +69,7 @@ def handle_current_age():
     if update_date > now:
         messages.append(f"¡🤗 Pero tengo buenas noticias! Desde el 📅 {thirds_dose_info['new_date_of_birth_date']} a "
                         f"las 07:00, las personas nacidas en {thirds_dose_info['new_date_of_birth']} podrán pedir "
-                        f"cita 👏")
+                        f"cita para terceras dosis 👏")
 
     messages.append(f"¡Si cumples con algunos de estos criterios, no esperes más vacúnate! Puedes pedir cita 🕘 en " +
                     f"🔗 https://autocitavacuna.sanidadmadrid.org/ohcitacovid.")
