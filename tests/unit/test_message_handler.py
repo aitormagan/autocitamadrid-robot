@@ -23,7 +23,7 @@ def test_given_just_before_new_date_of_birth_allowed_when_handle_current_age_the
 
     assert "primeras citas, el sistema permite pedir cita a personas nacidas en 2016 o antes." in messages[0]
     assert "el sistema de autocita permite pedir cita a personas nacidas en 1966 o antes" in messages[1]
-    assert "Desde el 📅 29/12/2021 a las 07:00, las personas nacidas en 1956 podrán pedir cita" in messages[2]
+    assert "Desde el 📅 29/12/2021 a las 07:00, las personas nacidas en 1956 o antes podrán pedir cita" in messages[2]
 
 
 @freeze_time("2021-12-29 07:00:01", tz_offset=-1)
