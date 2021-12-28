@@ -18,7 +18,8 @@ def handle_update(update):
     if user_id:
         if message in ["/start", "/help"]:
             answers = [f"¡Hola {name}! Bienvenidx al sistema de notificación de vacunación."]
-            answers.extend(handle_current_age())
+            answers.extend("Si quieres conocer los rangos de edad admitidos para 💉 primeras y 💉💉💉 terceras dosis, "
+                           "sólo tienes que decir /currentage")
             answers.append("🤔 ¿Vives en Madrid? ¿Usas mucho el metro? ¡Ahora tienes un nuevo "
                            "🤖 bot disponible! Con "
                            "[Metro Madrid - Tiempos de Espera](t.me/MetroMadridTiempoEsperaBot) "
@@ -27,9 +28,12 @@ def handle_update(update):
                            "esperes más y pruébalo ya!")
         elif message in ["/subscribe"]:
             answers = ["Lo siento 😔, ya no admito más suscripciones. 🤔 Pero si quieres conocer los rangos de edad "
-                       "admitidos para primeras y terceras dosis, sólo tienes que decir /currentage"]
+                       "admitidos para 💉 primeras y 💉💉💉 terceras dosis, sólo tienes que decir /currentage"]
         elif message in ["/cancel"]:
             answers = ["Toda tu información personal ya ha sido eliminada del sistema. ¡Gracias por tu confianza!"]
+        elif message in ["/mindate"]:
+            answers = ["Lo siento 😔, pero la Comunidad de Madrid cambió el sistema para impedirme que pueda "
+                       "seguir dándote esta información."]
         else:
             answers = handle_current_age()
 
