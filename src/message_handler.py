@@ -29,7 +29,7 @@ def handle_update(update):
         elif message in ["/subscribe"]:
             answers = ["Lo siento 😔, ya no admito más suscripciones. 🤔 Pero si quieres conocer los rangos de edad "
                        "admitidos para 💉 primeras y 💉💉💉 terceras dosis, sólo tienes que decir /currentage"]
-        elif message in ["/cancel"]:
+        elif message in ["/cancel", "/status"]:
             answers = ["Toda tu información personal ya ha sido eliminada del sistema. ¡Gracias por tu confianza!"]
         elif message in ["/mindate"]:
             answers = ["Lo siento 😔, pero la Comunidad de Madrid cambió el sistema para impedirme que pueda "
@@ -72,8 +72,8 @@ def handle_current_age():
 
     if update_date > now:
         messages.append(f"¡🤗 Pero tengo buenas noticias! Desde el 📅 {thirds_dose_info['new_date_of_birth_date']} a "
-                        f"las 07:00, las personas nacidas en {thirds_dose_info['new_date_of_birth']} podrán pedir "
-                        f"cita para terceras dosis 👏")
+                        f"las 07:00, las personas nacidas en {thirds_dose_info['new_date_of_birth']} o antes podrán "
+                        f"pedir cita para terceras dosis 👏")
 
     messages.append(f"¡Si cumples con algunos de estos criterios, no esperes más vacúnate! Puedes pedir cita 🕘 en " +
                     f"🔗 https://autocitavacuna.sanidadmadrid.org/ohcitacovid.")
