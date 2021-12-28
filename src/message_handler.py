@@ -18,7 +18,7 @@ def handle_update(update):
     if user_id:
         if message in ["/start", "/help"]:
             answers = [f"¡Hola {name}! Bienvenidx al sistema de notificación de vacunación."]
-            answers.extend("Si quieres conocer los rangos de edad admitidos para 💉 primeras y 💉💉💉 terceras dosis, "
+            answers.append("Si quieres conocer los rangos de edad admitidos para 💉 primeras y 💉💉💉 terceras dosis, "
                            "sólo tienes que decir /currentage")
             answers.append("🤔 ¿Vives en Madrid? ¿Usas mucho el metro? ¡Ahora tienes un nuevo "
                            "🤖 bot disponible! Con "
