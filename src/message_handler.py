@@ -26,8 +26,8 @@ def handle_update(update):
                            "con simplemente 🗣️ decir el nombre o mandar tu 📍 ubicación.\n\n¡No "
                            "esperes más y pruébalo ya!")
         elif message in ["/subscribe"]:
-            answers = ["Lo siento 😔, ya no admito más suscripciones. 🤔 Pero si quieres información de cuando puedes "
-                       "recibir tu 💉 tercera dosis, puedes preguntar /currentage"]
+            answers = ["Lo siento 😔, ya no admito más suscripciones. 🤔 Pero si quieres conocer los rangos de edad "
+                       "admitidos para primeras y terceras dosis, sólo tienes que decir /currentage"]
         elif message in ["/cancel"]:
             answers = ["Toda tu información personal ya ha sido eliminada del sistema. ¡Gracias por tu confianza!"]
         else:
