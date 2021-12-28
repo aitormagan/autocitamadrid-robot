@@ -1,8 +1,8 @@
-import boto3
+import json
 import os
-from src.exceptions import ImpossibleToDetermineMaxAge
+import boto3
 
-MIN_YEARS_PARAMETER = os.environ.get("PARAM_MIN_YEARS")
+THIRD_DOSE_INFO_PARAMETER = os.environ.get("THIRD_DOSE_INFO_PARAMETER")
 CLIENT = boto3.client('dynamodb')
 CLIENT_SSM = boto3.client('ssm')
 
@@ -16,18 +16,5 @@ __UPDATED_AT = "updated_at"
 __DATE_FORMAT = "%Y%m%d"
 
 
-def save_min_years(max_years):
-    try:
-        current_years = get_min_years()
-    except ImpossibleToDetermineMaxAge:
-        current_years = None
-
-    if current_years != max_years:
-        CLIENT_SSM.put_parameter(Name=MIN_YEARS_PARAMETER, Value=str(max_years), Type="String", Overwrite=True)
-
-
-def get_min_years():
-    try:
-        return int(CLIENT_SSM.get_parameter(Name=MIN_YEARS_PARAMETER)["Parameter"]["Value"])
-    except CLIENT_SSM.exceptions.ParameterNotFound:
-        raise ImpossibleToDetermineMaxAge()
+def get_info_third_dose():
+    return json.loads(CLIENT_SSM.get_parameter(Name=THIRD_DOSE_INFO_PARAMETER)["Parameter"]["Value"])
