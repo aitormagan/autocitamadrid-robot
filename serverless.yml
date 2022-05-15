@@ -55,12 +55,4 @@ functions:
   message_handler:
     handler: main.handle_telegram_message
     timeout: 30
-    events:
-      - http:
-          path: /
-          method: ANY
-          cors: true
-      - http:
-          path: '{proxy+}'
-          method: ANY
-          cors: true
+    url: true
