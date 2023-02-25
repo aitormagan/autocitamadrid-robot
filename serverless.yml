@@ -21,10 +21,6 @@ custom:
     definitions:
       functionErrors:
         treatMissingData: notBreaching
-  min_years_param:
-    dev: "/autocita/madrid/dev/min-years"
-    pro: "/autocita/madrid/pro/min-years"
-
 
 provider:
   name: aws
