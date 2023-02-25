@@ -43,9 +43,7 @@ provider:
         - "*"
   environment:
     BOT_TOKEN: ${env:BOT_TOKEN}
-    PARAM_MIN_YEARS: ${self:custom.min_years_param.${opt:stage, self:provider.stage}}
     STAGE: ${opt:stage}
-    THIRD_DOSE_INFO_PARAMETER: "/autocita/madrid/third-dose-info"
 
 functions:
   message_handler:
